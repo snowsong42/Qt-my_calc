@@ -14,10 +14,20 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+protected:
+    void keyPressEvent(QKeyEvent *event) override; // 添加键盘事件处理
+
+private slots:
+    void appendNumber();
+    void onBackspaceClicked();
+    void onClearClicked();
+    void onCallClicked();
 
 private:
     Ui::MainWindow *ui;
 };
+
 #endif // MAINWINDOW_H
