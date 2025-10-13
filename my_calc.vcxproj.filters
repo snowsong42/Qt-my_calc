@@ -35,56 +35,58 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="my_calc.qrc">
+    <ClCompile Include="Source Files\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\my_calc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Bitint.cpp">
+      <Filter>Source Files\Bigint</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\operator.cpp">
+      <Filter>Source Files\Bigint</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\LoanLayout.cpp">
+      <Filter>Source Files\Layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\MainLayout.cpp">
+      <Filter>Source Files\Layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\scienceLayout.cpp">
+      <Filter>Source Files\Layouts</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="Resource Files\my_calc.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="my_calc.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <ClCompile Include="my_calc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bitint.cpp">
-      <Filter>Source Files\Bigint</Filter>
-    </ClCompile>
-    <ClCompile Include="operator.cpp">
-      <Filter>Source Files\Bigint</Filter>
-    </ClCompile>
-    <ClCompile Include="MainLayout.cpp">
-      <Filter>Source Files\Layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="scienceLayout.cpp">
-      <Filter>Source Files\Layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="LoanLayout.cpp">
-      <Filter>Source Files\Layouts</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="dependences.h">
+    <ClInclude Include="Header Files\dependences.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Bigint.h">
+    <ClInclude Include="Header Files\Bigint.h">
       <Filter>Header Files\Bigint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="my_calc.h">
+    <QtMoc Include="Header Files\my_calc.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="ScienceLayout.h">
+    <QtMoc Include="Header Files\LoanLayout.h">
       <Filter>Header Files\Layouts</Filter>
     </QtMoc>
-    <QtMoc Include="MainLayout.h">
+    <QtMoc Include="Header Files\MainLayout.h">
       <Filter>Header Files\Layouts</Filter>
     </QtMoc>
-    <QtMoc Include="LoanLayout.h">
+    <QtMoc Include="Header Files\ScienceLayout.h">
       <Filter>Header Files\Layouts</Filter>
     </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="Form Files\my_calc.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
 </Project>

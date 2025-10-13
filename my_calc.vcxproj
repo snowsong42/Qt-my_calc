@@ -10,6 +10,29 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source Files\Bitint.cpp" />
+    <ClCompile Include="Source Files\LoanLayout.cpp" />
+    <ClCompile Include="Source Files\main.cpp" />
+    <ClCompile Include="Source Files\MainLayout.cpp" />
+    <ClCompile Include="Source Files\my_calc.cpp" />
+    <ClCompile Include="Source Files\operator.cpp" />
+    <ClCompile Include="Source Files\scienceLayout.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="Resource Files\my_calc.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header Files\Bigint.h" />
+    <ClInclude Include="Header Files\dependences.h" />
+    <QtMoc Include="Header Files\ScienceLayout.h" />
+    <QtMoc Include="Header Files\my_calc.h" />
+    <QtMoc Include="Header Files\MainLayout.h" />
+    <QtMoc Include="Header Files\LoanLayout.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="Form Files\my_calc.ui" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8726C57B-F26A-40A3-A497-3C47A43EB3E0}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>
@@ -90,25 +113,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Bitint.cpp" />
-    <ClCompile Include="LoanLayout.cpp" />
-    <ClCompile Include="MainLayout.cpp" />
-    <ClCompile Include="operator.cpp" />
-    <ClCompile Include="scienceLayout.cpp" />
-    <QtRcc Include="my_calc.qrc" />
-    <QtUic Include="my_calc.ui" />
-    <ClCompile Include="my_calc.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Bigint.h" />
-    <ClInclude Include="dependences.h" />
-    <QtMoc Include="LoanLayout.h" />
-    <QtMoc Include="MainLayout.h" />
-    <QtMoc Include="ScienceLayout.h" />
-    <QtMoc Include="my_calc.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
