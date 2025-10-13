@@ -1,0 +1,4 @@
+<RCC>
+    <qresource prefix="my_calc">
+    </qresource>
+</RCC>
