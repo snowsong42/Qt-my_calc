@@ -92,8 +92,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bitint.cpp" />
-    <ClCompile Include="MainFunction.cpp" />
+    <ClCompile Include="LoanLayout.cpp" />
+    <ClCompile Include="MainLayout.cpp" />
     <ClCompile Include="operator.cpp" />
+    <ClCompile Include="scienceLayout.cpp" />
     <QtRcc Include="my_calc.qrc" />
     <QtUic Include="my_calc.ui" />
     <ClCompile Include="my_calc.cpp" />
@@ -101,6 +103,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bigint.h" />
+    <ClInclude Include="dependences.h" />
+    <QtMoc Include="LoanLayout.h" />
+    <QtMoc Include="MainLayout.h" />
+    <QtMoc Include="ScienceLayout.h" />
     <QtMoc Include="my_calc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

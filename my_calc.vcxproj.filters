@@ -21,6 +21,18 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Source Files\Bigint">
+      <UniqueIdentifier>{a80f7059-98c4-48cb-bfcd-48326f35168c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Layouts">
+      <UniqueIdentifier>{a65e5f9d-626c-4126-a0c4-cc725b290d6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Layouts">
+      <UniqueIdentifier>{13b72237-a2d3-4db0-bebc-feb83f3214a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Bigint">
+      <UniqueIdentifier>{9f16106c-40b0-4bce-a1dc-13eb4b8f5fb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="my_calc.qrc">
@@ -37,24 +49,42 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="operator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Bitint.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Bigint</Filter>
     </ClCompile>
-    <ClCompile Include="MainFunction.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="operator.cpp">
+      <Filter>Source Files\Bigint</Filter>
+    </ClCompile>
+    <ClCompile Include="MainLayout.cpp">
+      <Filter>Source Files\Layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="scienceLayout.cpp">
+      <Filter>Source Files\Layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="LoanLayout.cpp">
+      <Filter>Source Files\Layouts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bigint.h">
+    <ClInclude Include="dependences.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bigint.h">
+      <Filter>Header Files\Bigint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="my_calc.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ScienceLayout.h">
+      <Filter>Header Files\Layouts</Filter>
+    </QtMoc>
+    <QtMoc Include="MainLayout.h">
+      <Filter>Header Files\Layouts</Filter>
+    </QtMoc>
+    <QtMoc Include="LoanLayout.h">
+      <Filter>Header Files\Layouts</Filter>
     </QtMoc>
   </ItemGroup>
 </Project>

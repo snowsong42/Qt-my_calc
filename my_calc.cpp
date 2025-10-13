@@ -2,25 +2,30 @@
 
 my_calc::my_calc(QWidget* parent)
     : QMainWindow(parent)
+    , mainLayout(nullptr)
+    , scienceLayout(nullptr)
+    , loanLayout(nullptr)
+    , currentLayout(nullptr)
 {
     // 设置窗口属性
     setWindowTitle("计算器");
-    setFixedSize(476, 570);
+    setFixedSize(600, 800);
 
-    // 创建控件和布局
+    // 创建控件
     createWidgets();
-    createMainLayout();
-    createConnections();
+    setupConnections();
 
     // 设置焦点策略
     setFocusPolicy(Qt::StrongFocus);
+
+    // 默认显示主布局
+    switchToMainLayout();
 }
 
 my_calc::~my_calc()
 {
-    // Qt的对象树会自动管理内存，不需要手动删除
+    cleanupCurrentLayout();
 }
-
 
 void my_calc::createWidgets()
 {
@@ -36,56 +41,66 @@ void my_calc::createWidgets()
     displayLineEdit->setText("");
     displayLineEdit->setAlignment(Qt::AlignRight);
     displayLineEdit->setReadOnly(true);
-    displayLineEdit->setPlaceholderText("请输入号码...");
+    displayLineEdit->setPlaceholderText("请输入表达式...");
+    displayLineEdit->setGeometry(30, 30, 411, 71);
 
-    // 创建文件菜单动作
-    myAc1 = new QAction("新建", this);
-    myAc1->setStatusTip("创建新的计算");
-    myAc1->setShortcut(QKeySequence::New);
+    // 创建菜单子动作
+    mainCalcAction = new QAction("主计算器", this);
+    mainCalcAction->setStatusTip("切换到主计算器模式");
+    mainCalcAction->setShortcut(QKeySequence("F1"));
 
-    myAc2 = new QAction("打开", this);
-    myAc2->setStatusTip("打开保存的计算");
-    myAc2->setShortcut(QKeySequence::Open);
+    scienceCalcAction = new QAction("科学计算器", this);
+    scienceCalcAction->setStatusTip("切换到科学计算器模式");
+    scienceCalcAction->setShortcut(QKeySequence("F2"));
+
+    loanCalcAction = new QAction("贷款计算器", this);
+    loanCalcAction->setStatusTip("切换到贷款计算器模式");
+    loanCalcAction->setShortcut(QKeySequence("F3"));
+
+    settingsAction = new QAction("设置", this);
+    settingsAction->setStatusTip("应用程序设置");
+    settingsAction->setShortcut(QKeySequence("Ctrl+P"));
 
     exitAction = new QAction("退出", this);
     exitAction->setStatusTip("退出应用程序");
     exitAction->setShortcut(QKeySequence::Quit);
 
-    // 创建编辑菜单动作
-    myAc3 = new QAction("设置", this);
-    myAc3->setStatusTip("应用程序设置");
-    myAc3->setShortcut(QKeySequence("Ctrl+P"));
-
-    // 创建帮助菜单动作
     aboutAction = new QAction("关于", this);
     aboutAction->setStatusTip("关于此应用程序");
 
-    // 创建文件菜单
-    fileMenu = menuBar()->addMenu("文件");
-    fileMenu->addAction(myAc1);
-    fileMenu->addAction(myAc2);
-    fileMenu->addSeparator();
-    fileMenu->addAction(exitAction);
+    // 创建菜单
+    // 模式
+    modeMenu = menuBar()->addMenu("模式");
+    modeMenu->addAction(mainCalcAction);
+    modeMenu->addAction(scienceCalcAction);
+    modeMenu->addAction(loanCalcAction);
+    modeMenu->addSeparator();
+    modeMenu->addAction(exitAction);
 
-    // 创建编辑菜单
+	// 编辑
     editMenu = menuBar()->addMenu("编辑");
-    editMenu->addAction(myAc3);
+    editMenu->addAction(settingsAction);
 
-    // 创建帮助菜单
+	// 帮助
     helpMenu = menuBar()->addMenu("帮助");
     helpMenu->addAction(aboutAction);
 
     // 创建工具栏
     mainToolBar = addToolBar("主工具栏");
-    mainToolBar->addAction(myAc1);
-    mainToolBar->addAction(myAc2);
+    mainToolBar->addAction(mainCalcAction);
+    mainToolBar->addAction(scienceCalcAction);
+    mainToolBar->addAction(loanCalcAction);
     mainToolBar->addSeparator();
-    mainToolBar->addAction(myAc3);
+    mainToolBar->addAction(settingsAction);
+}
 
-    // 连接信号和槽
-    connect(myAc1, &QAction::triggered, this, &my_calc::pop1);
-    connect(myAc2, &QAction::triggered, this, &my_calc::pop2);
-    connect(myAc3, &QAction::triggered, this, &my_calc::pop3);
+void my_calc::setupConnections()
+{
+    // 连接菜单动作
+    connect(mainCalcAction, &QAction::triggered, this, &my_calc::switchToMainLayout);
+    connect(scienceCalcAction, &QAction::triggered, this, &my_calc::switchToScienceLayout);
+    connect(settingsAction, &QAction::triggered, this, &my_calc::showSettings);
+    connect(loanCalcAction, &QAction::triggered, this, &my_calc::switchToLoanLayout);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
     connect(aboutAction, &QAction::triggered, this, [this]() {
         QMessageBox::about(this, "关于计算器",
@@ -95,125 +110,120 @@ void my_calc::createWidgets()
         });
 }
 
-void my_calc::createMainLayout()
+void my_calc::cleanupCurrentLayout()
 {
-    // 创建数字按钮
-    btn0 = new QPushButton("0", centralWidget);
-    btn1 = new QPushButton("1", centralWidget);
-    btn2 = new QPushButton("2", centralWidget);
-    btn3 = new QPushButton("3", centralWidget);
-    btn4 = new QPushButton("4", centralWidget);
-    btn5 = new QPushButton("5", centralWidget);
-    btn6 = new QPushButton("6", centralWidget);
-    btn7 = new QPushButton("7", centralWidget);
-    btn8 = new QPushButton("8", centralWidget);
-    btn9 = new QPushButton("9", centralWidget);
-    btnPercent = new QPushButton("%", centralWidget);
-    btnPeriod = new QPushButton(".", centralWidget);
-
-    // 创建功能按钮
-    btnBackspace = new QPushButton("删除", centralWidget);
-    btnClear = new QPushButton("C", centralWidget);
-    btnCommit = new QPushButton("=", centralWidget);
-
-    // 创建其他按钮
-    btnMC = new QPushButton("MC", centralWidget);
-    btnMplus = new QPushButton("M+", centralWidget);
-    btnMminus = new QPushButton("M-", centralWidget);
-    btnMR = new QPushButton("MR", centralWidget);
-    btnDiv = new QPushButton("÷", centralWidget);
-    btnMul = new QPushButton("×", centralWidget);
-    btnMinus = new QPushButton("-", centralWidget);
-    btnPlus = new QPushButton("+", centralWidget);
-
-    // 设置按钮最小高度
-    QList<QPushButton*> allButtons = centralWidget->findChildren<QPushButton*>();
-    for (QPushButton* button : allButtons) {
-        button->setMinimumHeight(50);
+    if (currentLayout) {
+        currentLayout->setParent(nullptr);
+        currentLayout->deleteLater();
+        currentLayout = nullptr;
     }
-    btnBackspace->setMinimumHeight(40);
-    btnCommit->setMinimumHeight(100);
-
-    // 创建主布局
-    gridLayout = new QGridLayout(centralWidget);
-    gridLayout->setHorizontalSpacing(15);
-
-    // 设置显示框位置
-    displayLineEdit->setGeometry(30, 30, 411, 71);
-
-    // 布局按钮
-    // 第一行
-    gridLayout->addWidget(btnMC, 0, 0);
-    gridLayout->addWidget(btnMplus, 0, 1);
-    gridLayout->addWidget(btnMminus, 0, 2);
-    gridLayout->addWidget(btnMR, 0, 3);
-
-    // 第二行
-    gridLayout->addWidget(btnClear, 1, 0);
-    gridLayout->addWidget(btnDiv, 1, 1);
-    gridLayout->addWidget(btnMul, 1, 2);
-    gridLayout->addWidget(btnBackspace, 1, 3);
-
-    // 第三行
-    gridLayout->addWidget(btn1, 2, 0);
-    gridLayout->addWidget(btn2, 2, 1);
-    gridLayout->addWidget(btn3, 2, 2);
-    gridLayout->addWidget(btnMinus, 2, 3);
-
-    // 第四行
-    gridLayout->addWidget(btn4, 3, 0);
-    gridLayout->addWidget(btn5, 3, 1);
-    gridLayout->addWidget(btn6, 3, 2);
-    gridLayout->addWidget(btnPlus, 3, 3);
-
-    // 第五行
-    gridLayout->addWidget(btn7, 4, 0);
-    gridLayout->addWidget(btn8, 4, 1);
-    gridLayout->addWidget(btn9, 4, 2);
-    gridLayout->addWidget(btnCommit, 4, 3, 2, 1); // 跨2行
-
-    // 第六行
-    gridLayout->addWidget(btnPercent, 5, 0);
-    gridLayout->addWidget(btn0, 5, 1);
-    gridLayout->addWidget(btnPeriod, 5, 2);
-
-    // 设置布局边距
-    gridLayout->setContentsMargins(50, 110, 50, 30);
 }
 
-void my_calc::createConnections()
+// 切换到主计算器
+void my_calc::switchToMainLayout()
 {
-    // 连接功能按钮信号
-    connect(btnBackspace, &QPushButton::clicked, this, &my_calc::onBackspaceClicked);
-    connect(btnClear, &QPushButton::clicked, this, &my_calc::onClearClicked);
-    connect(btnCommit, &QPushButton::clicked, this, &my_calc::onCommitClicked);
+    cleanupCurrentLayout();
 
-    // 连接数字按钮信号
-    connect(btn0, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn1, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn2, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn3, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn4, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn5, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn6, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn7, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn8, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btn9, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btnPercent, &QPushButton::clicked, this, &my_calc::appendNumber);
-    connect(btnPeriod, &QPushButton::clicked, this, &my_calc::appendNumber);
+    mainLayout = new MainLayout(centralWidget, displayLineEdit);
+    currentLayout = mainLayout;
+
+    // 连接MainLayout的信号到my_calc的槽
+    connect(mainLayout, &MainLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
+    connect(mainLayout, &MainLayout::displayClearRequested, this, &my_calc::clearDisplay);
+    connect(mainLayout, &MainLayout::backspaceRequested, this, [this]() {
+        QString text = displayLineEdit->text();
+        if (!text.isEmpty()) {
+            text.chop(1);
+            displayLineEdit->setText(text);
+        }
+        });
+
+    // 调整布局位置
+    mainLayout->setGeometry(0, 110, width(), height() - 110);
+    mainLayout->show();
 }
 
-void my_calc::pop1()
+// 切换到科学计算器
+void my_calc::switchToScienceLayout()
 {
-    QMessageBox::information(this, "新建", "创建新的计算会话", QMessageBox::Ok);
+    cleanupCurrentLayout();
+
+    scienceLayout = new ScienceLayout(centralWidget, displayLineEdit);
+    currentLayout = scienceLayout;
+
+    // 连接ScienceLayout的信号到my_calc的槽
+    connect(scienceLayout, &ScienceLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
+    connect(scienceLayout, &ScienceLayout::displayClearRequested, this, &my_calc::clearDisplay);
+    connect(scienceLayout, &ScienceLayout::backspaceRequested, this, [this]() {
+        QString text = displayLineEdit->text();
+        if (!text.isEmpty()) {
+            text.chop(1);
+            displayLineEdit->setText(text);
+        }
+        });
+    connect(scienceLayout, &ScienceLayout::calculateRequested, this, [this](const QString& expression) {
+        // 这里可以实现科学计算表达式的求值
+        // 暂时简单显示
+        QMessageBox::information(this, "科学计算",
+            QString("计算表达式: %1\n科学计算功能正在开发中...").arg(expression),
+            QMessageBox::Ok);
+        });
+
+    // 调整布局位置
+    scienceLayout->setGeometry(0, 110, width(), height() - 110);
+    scienceLayout->show();
 }
 
-void my_calc::pop2()
+// 切换到贷款计算器
+void my_calc::switchToLoanLayout()
 {
-    QMessageBox::information(this, "打开", "打开保存的计算文件", QMessageBox::Ok);
+    cleanupCurrentLayout();
+
+    loanLayout = new LoanLayout(centralWidget, displayLineEdit);
+    currentLayout = loanLayout;
+
+    // 连接LoanLayout的信号到my_calc的槽
+    connect(loanLayout, &LoanLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
+    connect(loanLayout, &LoanLayout::displayClearRequested, this, &my_calc::clearDisplay);
+
+    // 调整布局位置
+    loanLayout->setGeometry(0, 110, width(), height() - 110);
+    loanLayout->show();
 }
 
-void my_calc::pop3()
+void my_calc::showSettings()
 {
-    QMessageBox::information(this, "设置", "打开应用程序设置", QMessageBox::Ok);
+    QMessageBox::information(this, "设置", "应用程序设置对话框", QMessageBox::Ok);
+}
+
+void my_calc::updateDisplay(const QString& text)
+{
+    QString currentText = displayLineEdit->text();
+    displayLineEdit->setText(currentText + text);
+}
+
+void my_calc::clearDisplay()
+{
+    displayLineEdit->clear();
+}
+
+void my_calc::keyPressEvent(QKeyEvent* event)
+{
+    // 将键盘事件转发给当前布局
+    if (currentLayout) {
+        if (MainLayout* main = qobject_cast<MainLayout*>(currentLayout)) {
+            main->handleKeyPress(event);
+            return;
+        }
+        if (ScienceLayout* science = qobject_cast<ScienceLayout*>(currentLayout)) {
+            science->handleKeyPress(event);
+            return;
+        }
+        if (LoanLayout* loan = qobject_cast<LoanLayout*>(currentLayout)) {
+            loan->handleKeyPress(event);
+            return;
+        }
+    }
+
+    QMainWindow::keyPressEvent(event);
 }
