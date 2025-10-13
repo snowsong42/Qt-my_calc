@@ -1,10 +1,4 @@
 ﻿#include "my_calc.h"
-#include <QPushButton>
-#include <QLineEdit>
-#include <QGridLayout>
-#include <QKeyEvent>
-#include <QMessageBox>
-#include <QDebug>
 
 my_calc::my_calc(QWidget* parent)
     : QMainWindow(parent)
@@ -15,7 +9,7 @@ my_calc::my_calc(QWidget* parent)
 
     // 创建控件和布局
     createWidgets();
-    createLayout();
+    createMainLayout();
     createConnections();
 
     // 设置焦点策略
@@ -26,6 +20,7 @@ my_calc::~my_calc()
 {
     // Qt的对象树会自动管理内存，不需要手动删除
 }
+
 
 void my_calc::createWidgets()
 {
@@ -43,6 +38,65 @@ void my_calc::createWidgets()
     displayLineEdit->setReadOnly(true);
     displayLineEdit->setPlaceholderText("请输入号码...");
 
+    // 创建文件菜单动作
+    myAc1 = new QAction("新建", this);
+    myAc1->setStatusTip("创建新的计算");
+    myAc1->setShortcut(QKeySequence::New);
+
+    myAc2 = new QAction("打开", this);
+    myAc2->setStatusTip("打开保存的计算");
+    myAc2->setShortcut(QKeySequence::Open);
+
+    exitAction = new QAction("退出", this);
+    exitAction->setStatusTip("退出应用程序");
+    exitAction->setShortcut(QKeySequence::Quit);
+
+    // 创建编辑菜单动作
+    myAc3 = new QAction("设置", this);
+    myAc3->setStatusTip("应用程序设置");
+    myAc3->setShortcut(QKeySequence("Ctrl+P"));
+
+    // 创建帮助菜单动作
+    aboutAction = new QAction("关于", this);
+    aboutAction->setStatusTip("关于此应用程序");
+
+    // 创建文件菜单
+    fileMenu = menuBar()->addMenu("文件");
+    fileMenu->addAction(myAc1);
+    fileMenu->addAction(myAc2);
+    fileMenu->addSeparator();
+    fileMenu->addAction(exitAction);
+
+    // 创建编辑菜单
+    editMenu = menuBar()->addMenu("编辑");
+    editMenu->addAction(myAc3);
+
+    // 创建帮助菜单
+    helpMenu = menuBar()->addMenu("帮助");
+    helpMenu->addAction(aboutAction);
+
+    // 创建工具栏
+    mainToolBar = addToolBar("主工具栏");
+    mainToolBar->addAction(myAc1);
+    mainToolBar->addAction(myAc2);
+    mainToolBar->addSeparator();
+    mainToolBar->addAction(myAc3);
+
+    // 连接信号和槽
+    connect(myAc1, &QAction::triggered, this, &my_calc::pop1);
+    connect(myAc2, &QAction::triggered, this, &my_calc::pop2);
+    connect(myAc3, &QAction::triggered, this, &my_calc::pop3);
+    connect(exitAction, &QAction::triggered, this, &QWidget::close);
+    connect(aboutAction, &QAction::triggered, this, [this]() {
+        QMessageBox::about(this, "关于计算器",
+            "这是一个基于Qt的计算器应用程序\n"
+            "版本 1.0\n"
+            "使用纯代码实现");
+        });
+}
+
+void my_calc::createMainLayout()
+{
     // 创建数字按钮
     btn0 = new QPushButton("0", centralWidget);
     btn1 = new QPushButton("1", centralWidget);
@@ -79,10 +133,7 @@ void my_calc::createWidgets()
     }
     btnBackspace->setMinimumHeight(40);
     btnCommit->setMinimumHeight(100);
-}
 
-void my_calc::createLayout()
-{
     // 创建主布局
     gridLayout = new QGridLayout(centralWidget);
     gridLayout->setHorizontalSpacing(15);
@@ -152,105 +203,17 @@ void my_calc::createConnections()
     connect(btnPeriod, &QPushButton::clicked, this, &my_calc::appendNumber);
 }
 
-void my_calc::keyPressEvent(QKeyEvent* event)
+void my_calc::pop1()
 {
-    // 处理键盘按键事件
-    switch (event->key()) {
-    case Qt::Key_0:
-        btn0->click();
-        break;
-    case Qt::Key_1:
-        btn1->click();
-        break;
-    case Qt::Key_2:
-        btn2->click();
-        break;
-    case Qt::Key_3:
-        btn3->click();
-        break;
-    case Qt::Key_4:
-        btn4->click();
-        break;
-    case Qt::Key_5:
-        btn5->click();
-        break;
-    case Qt::Key_6:
-        btn6->click();
-        break;
-    case Qt::Key_7:
-        btn7->click();
-        break;
-    case Qt::Key_8:
-        btn8->click();
-        break;
-    case Qt::Key_9:
-        btn9->click();
-        break;
-    case Qt::Key_Percent:  //%号
-        btnPercent->click();
-        break;
-    case Qt::Key_Period: // .号
-        btnPeriod->click();
-        break;
-    case Qt::Key_Backspace:
-        btnBackspace->click();
-        break;
-    case Qt::Key_Delete:
-        btnClear->click();
-        break;
-    case Qt::Key_ParenLeft: //(
-        break;
-    case Qt::Key_ParenRight:    //)
-        break;
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        btnCommit->click();
-        break;
-    default:
-        QMainWindow::keyPressEvent(event);
-    }
+    QMessageBox::information(this, "新建", "创建新的计算会话", QMessageBox::Ok);
 }
 
-void my_calc::appendNumber()
+void my_calc::pop2()
 {
-    QPushButton* button = qobject_cast<QPushButton*>(sender());
-    if (button) {
-        QString currentText = displayLineEdit->text();
-        QString newText = currentText + button->text();
-        displayLineEdit->setText(newText);
-    }
+    QMessageBox::information(this, "打开", "打开保存的计算文件", QMessageBox::Ok);
 }
 
-void my_calc::onBackspaceClicked()
+void my_calc::pop3()
 {
-    QString currentText = displayLineEdit->text();
-    if (!currentText.isEmpty()) {
-        currentText.chop(1); // 移除最后一个字符
-        displayLineEdit->setText(currentText);
-    }
-}
-
-void my_calc::onClearClicked()
-{
-    displayLineEdit->clear();
-}
-
-void my_calc::onCommitClicked()
-{
-    QString number = displayLineEdit->text();
-    if (!number.isEmpty()) {
-        // 这里可以实现实际的拨号逻辑
-        if (number == "7355608") {
-            QMessageBox::information(this, "拨号中...",
-                "密码正确:7355608\n炸弹已经安放!",
-                QMessageBox::Ok);
-            this->close();
-        }
-        else {
-            QMessageBox::information(this, "拨号失败",
-                QString("密码错误: %1\n炸弹安放失败!").arg(number),
-                QMessageBox::Ok);
-        }
-        // 在实际应用中，这里可能会调用系统API或发送网络请求
-    }
+    QMessageBox::information(this, "设置", "打开应用程序设置", QMessageBox::Ok);
 }

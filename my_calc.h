@@ -1,7 +1,16 @@
-﻿#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+﻿#pragma once
 
 #include <QMainWindow>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QGridLayout>
+#include <QKeyEvent>
+#include <QMessageBox>
+#include <QDebug>
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
+#include <QToolBar>
 
 // 前向声明
 class QLineEdit;
@@ -25,11 +34,14 @@ private slots:
     void onBackspaceClicked();
     void onClearClicked();
     void onCommitClicked();
+    void pop1();
+    void pop2();
+    void pop3();
 
 private:
     // 创建UI控件
     void createWidgets();
-    void createLayout();
+    void createMainLayout();
     void createConnections();
 
     // 显示控件
@@ -54,7 +66,7 @@ private:
     QPushButton* btnClear;
     QPushButton* btnCommit;
 
-    // 其他按钮（在UI中存在但代码中未使用的）
+    // 其他按钮
     QPushButton* btnMC;
     QPushButton* btnMplus;
     QPushButton* btnMminus;
@@ -67,6 +79,16 @@ private:
     // 布局
     QGridLayout* gridLayout;
     QWidget* centralWidget;
-};
 
-#endif
+    // 菜单栏和工具栏
+    QMenu* fileMenu;
+    QMenu* editMenu;
+    QMenu* helpMenu;
+    QToolBar* mainToolBar;
+
+    QAction* myAc1;
+    QAction* myAc2;
+    QAction* myAc3;
+    QAction* exitAction;
+    QAction* aboutAction;
+};

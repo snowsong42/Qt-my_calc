@@ -92,6 +92,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bitint.cpp" />
+    <ClCompile Include="MainFunction.cpp" />
     <ClCompile Include="operator.cpp" />
     <QtRcc Include="my_calc.qrc" />
     <QtUic Include="my_calc.ui" />
