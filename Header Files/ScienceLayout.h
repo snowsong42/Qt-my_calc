@@ -1,48 +1,30 @@
 ﻿#pragma once
-#include "dependences.h"
+#include "BaseLayout.h"
+#include <QHash>
 
-// 前向声明
-class QPushButton;
-class QGridLayout;
-class QWidget;
-
-class ScienceLayout : public QWidget
+class ScienceLayout : public BaseLayout
 {
     Q_OBJECT
 
 public:
-    explicit ScienceLayout(QWidget* parent = nullptr, QLineEdit* display = nullptr);
-    ~ScienceLayout();
-
-    // 设置显示框引用
-    void setDisplay(QLineEdit* display) { displayLineEdit = display; }
-
-signals:
-    // 向主窗口发送的请求信号
-    void displayUpdateRequested(const QString& text);
-    void displayClearRequested();
-    void backspaceRequested();
-    void calculateRequested(const QString& expression);
+    explicit ScienceLayout(QWidget* parent = nullptr);
+    ~ScienceLayout() override;
 
 public slots:
-    void handleKeyPress(QKeyEvent* event);
-    void handleScientificFunction(const QString& function);
+    void handleKeyPress(QKeyEvent* event) override;
 
 private slots:
     void appendNumber();
     void onBackspaceClicked();
     void onClearClicked();
     void onCommitClicked();
-    void onScientificButtonClicked();
 
 private:
-    void createWidgets();
-    void setupLayout();
-    void setupConnections();
+    void createWidgets() override;
+    void setupLayout() override;
+    void setupConnections() override;
     void setupScientificButtons();
 
-    // 显示框引用
-    QLineEdit* displayLineEdit;
 
     // 基本数字按钮
     QPushButton* btn0;
@@ -82,11 +64,10 @@ private:
     QPushButton* btnMod;       // mod
     QPushButton* btnLeftParen; // (
     QPushButton* btnRightParen; // )
-    QPushButton* btnFactorial; // n! (图片中的nI可能是阶乘)
-
-    // 布局
-    QGridLayout* gridLayout;
+    QPushButton* btnFactorial; // n!
 
     // 科学计算函数映射
     QHash<QString, QString> scientificFunctions;
+    // 布局
+    QGridLayout* gridLayout;
 };

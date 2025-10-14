@@ -9,7 +9,7 @@ my_calc::my_calc(QWidget* parent)
 {
     // 设置窗口属性
     setWindowTitle("计算器");
-    setFixedSize(600, 800);
+    setFixedSize(600, 600);
 
     // 创建控件
     createWidgets();
@@ -110,106 +110,9 @@ void my_calc::setupConnections()
         });
 }
 
-void my_calc::cleanupCurrentLayout()
-{
-    if (currentLayout) {
-        currentLayout->setParent(nullptr);
-        currentLayout->deleteLater();
-        currentLayout = nullptr;
-    }
-}
-
-// 切换到主计算器
-void my_calc::switchToMainLayout()
-{
-    cleanupCurrentLayout();
-
-    mainLayout = new MainLayout(centralWidget, displayLineEdit);
-    currentLayout = mainLayout;
-
-    // 连接MainLayout的信号到my_calc的槽
-    connect(mainLayout, &MainLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
-    connect(mainLayout, &MainLayout::displayClearRequested, this, &my_calc::clearDisplay);
-    connect(mainLayout, &MainLayout::backspaceRequested, this, [this]() {
-        QString text = displayLineEdit->text();
-        if (!text.isEmpty()) {
-            text.chop(1);
-            displayLineEdit->setText(text);
-        }
-        });
-
-    // 调整布局位置
-    mainLayout->setGeometry(0, 110, width(), height() - 110);
-    mainLayout->show();
-}
-
-// 切换到科学计算器
-void my_calc::switchToScienceLayout()
-{
-    cleanupCurrentLayout();
-
-    scienceLayout = new ScienceLayout(centralWidget, displayLineEdit);
-    currentLayout = scienceLayout;
-
-    // 连接ScienceLayout的信号到my_calc的槽
-    connect(scienceLayout, &ScienceLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
-    connect(scienceLayout, &ScienceLayout::displayClearRequested, this, &my_calc::clearDisplay);
-    connect(scienceLayout, &ScienceLayout::backspaceRequested, this, [this]() {
-        QString text = displayLineEdit->text();
-        if (!text.isEmpty()) {
-            text.chop(1);
-            displayLineEdit->setText(text);
-        }
-        });
-    connect(scienceLayout, &ScienceLayout::calculateRequested, this, [this](const QString& expression) {
-        // 这里可以实现科学计算表达式的求值
-        // 暂时简单显示
-        QMessageBox::information(this, "科学计算",
-            QString("计算表达式: %1\n科学计算功能正在开发中...").arg(expression),
-            QMessageBox::Ok);
-        });
-
-    // 调整布局位置
-    scienceLayout->setGeometry(0, 110, width(), height() - 110);
-    scienceLayout->show();
-}
-
-// 切换到贷款计算器
-void my_calc::switchToLoanLayout()
-{
-    cleanupCurrentLayout();
-
-    loanLayout = new LoanLayout(centralWidget, displayLineEdit);
-    currentLayout = loanLayout;
-
-    // 连接LoanLayout的信号到my_calc的槽
-    connect(loanLayout, &LoanLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
-    connect(loanLayout, &LoanLayout::displayClearRequested, this, &my_calc::clearDisplay);
-
-    // 调整布局位置
-    loanLayout->setGeometry(0, 110, width(), height() - 110);
-    loanLayout->show();
-}
-
-void my_calc::showSettings()
-{
-    QMessageBox::information(this, "设置", "应用程序设置对话框", QMessageBox::Ok);
-}
-
-void my_calc::updateDisplay(const QString& text)
-{
-    QString currentText = displayLineEdit->text();
-    displayLineEdit->setText(currentText + text);
-}
-
-void my_calc::clearDisplay()
-{
-    displayLineEdit->clear();
-}
-
+// 将键盘事件转发给当前布局
 void my_calc::keyPressEvent(QKeyEvent* event)
 {
-    // 将键盘事件转发给当前布局
     if (currentLayout) {
         if (MainLayout* main = qobject_cast<MainLayout*>(currentLayout)) {
             main->handleKeyPress(event);
@@ -224,6 +127,103 @@ void my_calc::keyPressEvent(QKeyEvent* event)
             return;
         }
     }
-
     QMainWindow::keyPressEvent(event);
 }
+
+// 清理当前布局
+void my_calc::cleanupCurrentLayout()
+{
+    if (currentLayout) {
+        currentLayout->setParent(nullptr);
+        currentLayout->deleteLater();
+        currentLayout = nullptr;
+    }
+}
+
+// 统一的布局连接函数
+void my_calc::connectLayoutSignals(BaseLayout* layout)
+{
+    if (!layout) return;
+
+	// 统一接入所有布局的共同信号，借助BaseLayout
+    connect(layout, &BaseLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
+    connect(layout, &BaseLayout::displaySetRequested, this, &my_calc::setDisplay);
+    connect(layout, &BaseLayout::displayClearRequested, this, &my_calc::clearDisplay);
+    connect(layout, &BaseLayout::backspaceRequested, this, &my_calc::backspaceDisplay);
+    connect(layout, &BaseLayout::getDisplayTextRequested, this, &my_calc::getDisplayText);
+}
+
+// 切换到主计算器布局
+void my_calc::switchToMainLayout()
+{
+    cleanupCurrentLayout();
+    mainLayout = new MainLayout(centralWidget);
+    currentLayout = mainLayout;
+    connectLayoutSignals(mainLayout);
+    mainLayout->setGeometry(0, 110, width(), height() - 110);
+    mainLayout->show();
+}
+
+// 切换到科学计算器布局
+void my_calc::switchToScienceLayout()
+{
+    cleanupCurrentLayout();
+    scienceLayout = new ScienceLayout(centralWidget);
+    currentLayout = scienceLayout;
+    connectLayoutSignals(scienceLayout);
+    scienceLayout->setGeometry(0, 110, width(), height() - 110);
+    scienceLayout->show();
+}
+
+// 切换到贷款计算器布局
+void my_calc::switchToLoanLayout()
+{
+    cleanupCurrentLayout();
+    loanLayout = new LoanLayout(centralWidget);
+    currentLayout = loanLayout;
+    connectLayoutSignals(loanLayout);
+    loanLayout->setGeometry(0, 110, width(), height() - 110);
+    loanLayout->show();
+}
+
+// 显示设置对话框（占位）
+void my_calc::showSettings()
+{
+    QMessageBox::information(this, "设置", "设置功能正在开发中...");
+}
+
+// 操作显示框的核心代码，是收发周转的枢纽
+void my_calc::updateDisplay(const QString& text)
+{
+	// 在显示框末尾追加文本
+    QString currentText = displayLineEdit->text();
+    displayLineEdit->setText(currentText + text);
+}
+
+void my_calc::setDisplay(const QString& text)
+{
+	// 直接设置显示框内容
+    displayLineEdit->setText(text);
+}
+
+void my_calc::backspaceDisplay()
+{
+	// 删除显示框最后一个字符
+    QString text = displayLineEdit->text();
+    if (!text.isEmpty()) {
+        text.chop(1);
+        displayLineEdit->setText(text);
+	}
+}
+
+void my_calc::clearDisplay()
+{
+	// 清空显示框
+    displayLineEdit->clear();
+}
+
+QString my_calc::getDisplayText() const {
+	// 获取显示框内容
+	return displayLineEdit->text();
+}
+

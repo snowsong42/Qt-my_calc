@@ -1,30 +1,16 @@
 ﻿#pragma once
-#include "dependences.h"
+#include "BaseLayout.h"
 
-// 前向声明
-class QPushButton;
-class QGridLayout;
-class QWidget;
-
-class MainLayout : public QWidget
+class MainLayout : public BaseLayout
 {
     Q_OBJECT
 
 public:
-    explicit MainLayout(QWidget* parent = nullptr, QLineEdit* display = nullptr);
-    ~MainLayout();
-
-    // 设置显示框引用
-    void setDisplay(QLineEdit* display) { displayLineEdit = display; }
-
-signals:
-    // 向主窗口发送的请求信号
-    void displayUpdateRequested(const QString& text);
-    void displayClearRequested();
-    void backspaceRequested();
+    explicit MainLayout(QWidget* parent = nullptr);
+    ~MainLayout() override;
 
 public slots:
-    void handleKeyPress(QKeyEvent* event);
+    void handleKeyPress(QKeyEvent* event) override;
 
 private slots:
     void appendNumber();
@@ -33,12 +19,9 @@ private slots:
     void onCommitClicked();
 
 private:
-    void createWidgets();
-    void setupLayout();
-    void setupConnections();
-
-    // 显示框引用
-    QLineEdit* displayLineEdit;
+    void createWidgets() override;
+    void setupLayout() override;
+    void setupConnections() override;
 
     // 数字按钮
     QPushButton* btn0;

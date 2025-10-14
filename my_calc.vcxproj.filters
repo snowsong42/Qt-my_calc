@@ -50,10 +50,13 @@
     <ClCompile Include="Source Files\LoanLayout.cpp">
       <Filter>Source Files\Layouts</Filter>
     </ClCompile>
-    <ClCompile Include="Source Files\MainLayout.cpp">
+    <ClCompile Include="Source Files\scienceLayout.cpp">
       <Filter>Source Files\Layouts</Filter>
     </ClCompile>
-    <ClCompile Include="Source Files\scienceLayout.cpp">
+    <ClCompile Include="BaseLayout.cpp">
+      <Filter>Source Files\Layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\MainLayout.cpp">
       <Filter>Source Files\Layouts</Filter>
     </ClCompile>
   </ItemGroup>
@@ -81,6 +84,9 @@
       <Filter>Header Files\Layouts</Filter>
     </QtMoc>
     <QtMoc Include="Header Files\ScienceLayout.h">
+      <Filter>Header Files\Layouts</Filter>
+    </QtMoc>
+    <QtMoc Include="BaseLayout.h">
       <Filter>Header Files\Layouts</Filter>
     </QtMoc>
   </ItemGroup>

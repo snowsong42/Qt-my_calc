@@ -11,10 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BaseLayout.cpp" />
     <ClCompile Include="Source Files\Bitint.cpp" />
     <ClCompile Include="Source Files\LoanLayout.cpp" />
     <ClCompile Include="Source Files\main.cpp" />
-    <ClCompile Include="Source Files\MainLayout.cpp" />
+    <ClCompile Include="Source Files\MainLayout.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
     <ClCompile Include="Source Files\my_calc.cpp" />
     <ClCompile Include="Source Files\operator.cpp" />
     <ClCompile Include="Source Files\scienceLayout.cpp" />
@@ -23,6 +29,7 @@
     <QtRcc Include="Resource Files\my_calc.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="BaseLayout.h" />
     <ClInclude Include="Header Files\Bigint.h" />
     <ClInclude Include="Header Files\dependences.h" />
     <QtMoc Include="Header Files\ScienceLayout.h" />
@@ -85,6 +92,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\coding\project\VisualStudio\Qt\my_calc\Header Files;D:\coding\project\VisualStudio\Qt\my_calc\Form Files;D:\coding\project\VisualStudio\Qt\my_calc\Resource Files;D:\coding\project\VisualStudio\Qt\my_calc\Source Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

@@ -3,6 +3,7 @@
 #include "MainLayout.h"
 #include "ScienceLayout.h"
 #include "LoanLayout.h"
+#include "BaseLayout.h"
 
 // 前向声明
 class QPushButton;
@@ -19,8 +20,8 @@ public:
     explicit my_calc(QWidget* parent = nullptr);
     ~my_calc();
 
-    // 提供对显示框的访问接口
-    QLineEdit* getDisplay() const { return displayLineEdit; }
+    // 提供备用的的访问接口
+	//QLineEdit* getDisplay() const { return displayLineEdit; } // 这是不良代码！
     QWidget* getCentralWidget() const { return centralWidget; }
 
 signals:
@@ -28,13 +29,18 @@ signals:
     void layoutSwitchRequested(const QString& layoutName);
 
 public slots:
+    void connectLayoutSignals(BaseLayout* layout);
 	void switchToMainLayout(); // 切换到主计算器
 	void switchToScienceLayout(); // 切换到科学计算器
     void switchToLoanLayout();  // 切换到贷款计算器
+	void showSettings(); // 显示对话框设置
 
-	void showSettings(); // 显示设置对话框
+    // 操作显示框的核心代码，是收发周转的枢纽
 	void updateDisplay(const QString& text); // 更新显示框内容
-	void clearDisplay(); // 清空显示框内容
+	void setDisplay(const QString& text);   // 直接设置显示框内容
+	void backspaceDisplay();                // 删除显示框最后一个字符
+	void clearDisplay();                    // 清空显示框内容
+    QString getDisplayText() const;         // 获取显示框内容
     
 protected:
     void keyPressEvent(QKeyEvent* event) override;

@@ -2,9 +2,8 @@
 #include <cmath>
 #include <QHash>
 
-ScienceLayout::ScienceLayout(QWidget* parent, QLineEdit* display)
-    : QWidget(parent)
-    , displayLineEdit(display)
+ScienceLayout::ScienceLayout(QWidget* parent)
+    : BaseLayout(parent)
 {
     createWidgets();
     setupLayout();
@@ -159,17 +158,17 @@ void ScienceLayout::setupConnections()
     connect(btnRightParen, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
 
     // 连接科学计算按钮
-    connect(btnPi, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnE, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnSquare, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnPower, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnTenPower, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnLog, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnLn, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnExp, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnMod, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnFactorial, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
-    connect(btnPercent, &QPushButton::clicked, this, &ScienceLayout::onScientificButtonClicked);
+    connect(btnPi, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnE, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnSquare, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnPower, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnTenPower, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnLog, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnLn, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnExp, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnMod, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnFactorial, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
+    connect(btnPercent, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
 }
 
 void ScienceLayout::setupScientificButtons()
@@ -238,23 +237,9 @@ void ScienceLayout::onClearClicked()
 
 void ScienceLayout::onCommitClicked()
 {
-    if (displayLineEdit && !displayLineEdit->text().isEmpty()) {
-        QString expression = displayLineEdit->text();
-        emit calculateRequested(expression);
-    }
-}
+    QString s = emit getDisplayTextRequested(); // 请求获取表达式
 
-void ScienceLayout::onScientificButtonClicked()
-{
-    QPushButton* button = qobject_cast<QPushButton*>(sender());
-    if (button && scientificFunctions.contains(button->text())) {
-        QString function = scientificFunctions[button->text()];
-        emit displayUpdateRequested(function);
-    }
-}
-
-void ScienceLayout::handleScientificFunction(const QString& function)
-{
-    // 这里可以实现复杂的科学计算函数处理
-    emit displayUpdateRequested(function);
+    // 处理计算
+    QString result = "正在开发中";
+    emit displaySetRequested(s+result);
 }

@@ -1,8 +1,8 @@
 ﻿#include "MainLayout.h"
+#include "BaseLayout.h"
 
-MainLayout::MainLayout(QWidget* parent, QLineEdit* display)
-    : QWidget(parent)
-    , displayLineEdit(display)
+MainLayout::MainLayout(QWidget* parent)
+    : BaseLayout(parent)
 {
     createWidgets();
     setupLayout();
@@ -45,10 +45,11 @@ void MainLayout::createWidgets()
     btnMinus = new QPushButton("-", this);
     btnPlus = new QPushButton("+", this);
 
-    // 设置按钮最小高度
+    // 设置按钮样式
     QList<QPushButton*> allButtons = findChildren<QPushButton*>();
     for (QPushButton* button : allButtons) {
-        button->setMinimumHeight(50);
+        setupButtonStyle(button);
+        button->setMinimumHeight(50); // 主计算器按钮更高
     }
     btnBackspace->setMinimumHeight(40);
     btnCommit->setMinimumHeight(100);
@@ -177,39 +178,30 @@ void MainLayout::handleKeyPress(QKeyEvent* event)
     }
 }
 
+// 核心代码：通信逻辑的实现
 void MainLayout::appendNumber()
 {
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     if (button) {
-        emit displayUpdateRequested(button->text());
+        emit displayUpdateRequested(button->text()); // 使用基类信号
     }
 }
 
 void MainLayout::onBackspaceClicked()
 {
-    emit backspaceRequested();
+    emit backspaceRequested(); // 使用基类信号
 }
 
 void MainLayout::onClearClicked()
 {
-    emit displayClearRequested();
+    emit displayClearRequested(); // 使用基类信号
 }
 
 void MainLayout::onCommitClicked()
 {
-    if (displayLineEdit && !displayLineEdit->text().isEmpty()) {
-        QString number = displayLineEdit->text();
-        // 这里可以实现实际的拨号逻辑
-        if (number == "7355608") {
-            QMessageBox::information(this, "拨号中...",
-                "密码正确:7355608\n炸弹已经安放!",
-                QMessageBox::Ok);
-            window()->close();
-        }
-        else {
-            QMessageBox::information(this, "拨号失败",
-                QString("密码错误: %1\n炸弹安放失败!").arg(number),
-                QMessageBox::Ok);
-        }
-    }
+    QString s = emit getDisplayTextRequested(); // 请求获取表达式
+
+    // 处理计算
+    QString result = "正在开发中";
+    emit displaySetRequested(s+result);
 }
