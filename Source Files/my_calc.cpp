@@ -7,6 +7,7 @@ my_calc::my_calc(QWidget* parent)
     , loanLayout(nullptr)
     , currentLayout(nullptr)
 {
+    this->setWindowIcon(QIcon(":/image/ice.ico"));
     // 设置窗口属性
     setWindowTitle("计算器");
     setMinimumSize(400, 500); // 设置最小大小，允许缩放

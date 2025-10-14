@@ -40,6 +40,9 @@
   <ItemGroup>
     <QtUic Include="Form Files\my_calc.ui" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource Files\ice.ico" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8726C57B-F26A-40A3-A497-3C47A43EB3E0}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>

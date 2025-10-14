@@ -1,4 +1,6 @@
 <RCC>
-    <qresource prefix="my_calc">
+    <qresource prefix="/my_calc"/>
+    <qresource prefix="/image">
+        <file>ice.ico</file>
     </qresource>
 </RCC>

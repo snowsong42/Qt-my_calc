@@ -28,7 +28,7 @@ void LoanLayout::createWidgets()
     // 创建输出货币单位选择组
     currencyGroup = new QGroupBox("输出单位", this);
     currencyYuan = new QRadioButton("元", currencyGroup);
-    currencyWanYuan = new QRadioButton("万元", currencyGroup); // 修正变量名
+    currencyWanYuan = new QRadioButton("万元", currencyGroup);
     currencyWanYuan->setChecked(true); // 默认选择万元输出
 
     // 创建输入控件
@@ -232,8 +232,21 @@ void LoanLayout::setupConnections()
             updateCurrencyType(1);
         }
         });
-}
 
+    // 新增：连接还款方式选择
+    connect(equalPrincipalAndInterest, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked && !monthlyPaymentStr.isEmpty()) {
+            // 如果有计算结果，立即重新计算并更新显示
+            onCommitClicked();
+        }
+        });
+    connect(equalPrincipal, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked && !monthlyPaymentStr.isEmpty()) {
+            // 如果有计算结果，立即重新计算并更新显示
+            onCommitClicked();
+        }
+        });
+}
 bool LoanLayout::validateInputs()
 {
     // 检查贷款年限
@@ -479,7 +492,7 @@ void LoanLayout::updateOutputType(int index)
 {
     currentOutputType = index;
 
-    // 如果有计算结果，立即更新显示
+    // 如果有计算结果，立即更新显示（不重新计算）
     if (!monthlyPaymentStr.isEmpty()) {
         sendResultsToMainDisplay();
     }
@@ -489,8 +502,8 @@ void LoanLayout::updateCurrencyType(int index)
 {
     useYuanOutput = (index == 0); // 0=元输出, 1=万元输出
 
-    // 如果有计算结果，立即更新显示
+    // 如果有计算结果，立即重新计算并更新显示
     if (!monthlyPaymentStr.isEmpty()) {
-        sendResultsToMainDisplay();
+        onCommitClicked();  // 重新计算并更新显示
     }
 }
