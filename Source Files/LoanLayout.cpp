@@ -14,7 +14,70 @@ LoanLayout::LoanLayout(QWidget* parent)
 
 LoanLayout::~LoanLayout()
 {
-    // Qt的对象树会自动管理内存
+    cleanup();
+}
+
+void LoanLayout::cleanup()
+{
+    // 清理还款方式选择组
+    if (repaymentGroup) {
+        delete repaymentGroup;
+        repaymentGroup = nullptr;
+    }
+
+    // 清理货币单位选择组
+    if (currencyGroup) {
+        delete currencyGroup;
+        currencyGroup = nullptr;
+    }
+
+    // 清理输入控件
+    if (loanYears) {
+        delete loanYears;
+        loanYears = nullptr;
+    }
+
+    if (loanAmount) {
+        delete loanAmount;
+        loanAmount = nullptr;
+    }
+
+    if (interestRate) {
+        delete interestRate;
+        interestRate = nullptr;
+    }
+
+    if (outputType) {
+        delete outputType;
+        outputType = nullptr;
+    }
+
+    // 清理按钮
+    if (btnCalculate) {
+        delete btnCalculate;
+        btnCalculate = nullptr;
+    }
+
+    if (btnReset) {
+        delete btnReset;
+        btnReset = nullptr;
+    }
+
+    // 清理布局
+    if (gridLayout) {
+        delete gridLayout;
+        gridLayout = nullptr;
+    }
+
+    if (mainLayout) {
+        delete mainLayout;
+        mainLayout = nullptr;
+    }
+
+    // 清空结果字符串
+    monthlyPaymentStr.clear();
+    totalInterestStr.clear();
+    totalPaymentStr.clear();
 }
 
 void LoanLayout::createWidgets()
@@ -142,16 +205,16 @@ void LoanLayout::setupLayout()
     mainLayout->setSpacing(12);
     mainLayout->setContentsMargins(18, 18, 18, 18);
 
-    // 还款方式选择
+    // 选择:还款方式
     QHBoxLayout* repaymentLayout = new QHBoxLayout(repaymentGroup);
     repaymentLayout->addWidget(equalPrincipalAndInterest);
     repaymentLayout->addWidget(equalPrincipal);
     repaymentLayout->addStretch();
 
-    // 输出货币单位选择
+    // 选择:输出货币单位
     QHBoxLayout* currencyLayout = new QHBoxLayout(currencyGroup);
     currencyLayout->addWidget(currencyYuan);
-    currencyLayout->addWidget(currencyWanYuan); // 修正变量名
+    currencyLayout->addWidget(currencyWanYuan);
     currencyLayout->addStretch();
 
     // 创建输入区域网格布局

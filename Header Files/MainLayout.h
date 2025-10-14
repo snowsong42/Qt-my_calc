@@ -25,9 +25,13 @@ private slots:
     void onMemoryRecall();
 
 private:
+	// 实现基类的纯虚函数
     void createWidgets() override;
     void setupLayout() override;
     void setupConnections() override;
+	void cleanup() override;
+
+	// 自身的工具方法
     QString evaluateExpression(const QString& expression);
     double getCurrentDisplayValue();
     bool isOperator(QChar c);

@@ -59,6 +59,12 @@
     <ClCompile Include="Source Files\BaseLayout.cpp">
       <Filter>Source Files\Layouts</Filter>
     </ClCompile>
+    <ClCompile Include="Source Files\Settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\SettingsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource Files\my_calc.qrc">
@@ -71,6 +77,9 @@
     </ClInclude>
     <ClInclude Include="Header Files\Bigint.h">
       <Filter>Header Files\Bigint</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Settings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +97,9 @@
     </QtMoc>
     <QtMoc Include="Header Files\BaseLayout.h">
       <Filter>Header Files\Layouts</Filter>
+    </QtMoc>
+    <QtMoc Include="Header Files\SettingsDialog.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

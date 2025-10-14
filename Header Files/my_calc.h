@@ -4,6 +4,9 @@
 #include "ScienceLayout.h"
 #include "LoanLayout.h"
 #include "BaseLayout.h"
+#include "Settings.h"
+#include "SettingsDialog.h"
+#include <QApplication> 
 
 // 前向声明
 class QPushButton;
@@ -48,6 +51,13 @@ private:
     void setupConnections();
     void cleanupCurrentLayout();
 
+    // 添加设置相关成员
+    Settings* appSettings;
+    SettingsDialog* settingsDialog;
+
+    // 添加样式应用函数
+    void applyStyle(const QString& style);
+
     // UI控件
     QWidget* centralWidget;
 
@@ -75,6 +85,7 @@ private:
     MainLayout* mainLayout;
     ScienceLayout* scienceLayout;
     LoanLayout* loanLayout;
+
     // 当前布局
-    QWidget* currentLayout;
+    BaseLayout* currentLayout;
 };

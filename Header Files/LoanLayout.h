@@ -31,9 +31,13 @@ public slots:
     void updateCurrencyType(int index);
 
 private:
+	// 重写基类的纯虚函数
     void createWidgets() override;
     void setupLayout() override;
     void setupConnections() override;
+	void cleanup() override;
+
+    // 自身的工具函数
     void calculateEqualPrincipalAndInterest(double amount, double rate, int months);
     void calculateEqualPrincipal(double amount, double rate, int months);
     void sendResultsToMainDisplay();

@@ -6,27 +6,53 @@ my_calc::my_calc(QWidget* parent)
     , scienceLayout(nullptr)
     , loanLayout(nullptr)
     , currentLayout(nullptr)
+    , appSettings(new Settings())
+    , settingsDialog(nullptr)
 {
     this->setWindowIcon(QIcon(":/image/ice.ico"));
-    // 设置窗口属性
     setWindowTitle("计算器");
-    setMinimumSize(400, 500); // 设置最小大小，允许缩放
-    resize(500, 600); // 初始大小
+    setMinimumSize(400, 500);
+    resize(500, 600);
 
-    // 创建控件
     createWidgets();
     setupConnections();
 
-    // 设置焦点策略
     setFocusPolicy(Qt::StrongFocus);
+
+    // 应用保存的窗口状态
+    if (appSettings->getAutoSaveWindow()) {
+        restoreGeometry(appSettings->getWindowGeometry());
+        restoreState(appSettings->getWindowState());
+    }
+
+
+    // 将样式名称转换为样式表
+    QString styleSheet = appSettings->styleCast(appSettings->getStyle()); 
+    // 应用样式表
+    applyStyle(styleSheet);
 
     // 默认显示主布局
     switchToMainLayout();
 }
 
+void my_calc::applyStyle(const QString& styleSheet) {
+    qApp->setStyleSheet(styleSheet);
+}
+
 my_calc::~my_calc()
 {
+    // 保存窗口状态
+    if (appSettings->getAutoSaveWindow()) {
+        appSettings->setWindowGeometry(saveGeometry());
+        appSettings->setWindowState(saveState());
+        appSettings->save();
+    }
+
     cleanupCurrentLayout();
+    delete appSettings;
+    if (settingsDialog) {
+        delete settingsDialog;
+    }
 }
 
 void my_calc::createWidgets()
@@ -48,17 +74,7 @@ void my_calc::createWidgets()
     displayLineEdit->setAlignment(Qt::AlignRight);
     displayLineEdit->setReadOnly(false);
     displayLineEdit->setPlaceholderText("请输入表达式...");
-    /*
-    displayLineEdit->setStyleSheet(
-        "QLineEdit {"
-        "    border: 2px solid #ccc;"
-        "    border-radius: 5px;"
-        "    padding: 5px 10px;"
-        "    background-color: #f9f9f9;"
-        "    font: 16pt 'Century Gothic';"
-        "}"
-    );
-    */
+
     displayLineEdit->setStyleSheet(
         "QLineEdit {"
         "    border: 2px solid #A0A0A0;" /* 边框宽度为2px，颜色为#A0A0A0 */
@@ -90,7 +106,7 @@ void my_calc::createWidgets()
 
     settingsAction = new QAction("设置", this);
     settingsAction->setStatusTip("应用程序设置");
-    settingsAction->setShortcut(QKeySequence("Ctrl+S"));
+    settingsAction->setShortcut(QKeySequence("F4"));
 
     exitAction = new QAction("退出", this);
     exitAction->setStatusTip("退出应用程序");
@@ -128,16 +144,21 @@ void my_calc::createWidgets()
 void my_calc::setupConnections()
 {
     // 连接菜单动作
+	// 布局切换
     connect(mainCalcAction, &QAction::triggered, this, &my_calc::switchToMainLayout);
     connect(scienceCalcAction, &QAction::triggered, this, &my_calc::switchToScienceLayout);
-    connect(settingsAction, &QAction::triggered, this, &my_calc::showSettings);
     connect(loanCalcAction, &QAction::triggered, this, &my_calc::switchToLoanLayout);
+
+	// 关闭、设置、关于
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
+    connect(settingsAction, &QAction::triggered, this, &my_calc::showSettings);
     connect(aboutAction, &QAction::triggered, this, [this]() {
         QMessageBox::about(this, "关于计算器",
-            "这是一个基于Qt的计算器应用程序\n"
-            "版本 1.0\n"
-            "使用纯代码实现");
+            "这是一个基于Qt的计算器小程序，纯代码实现\n"
+			"作者：SnowSong\n"
+            "越崎理工实验24-01班 学号：06245011\n"
+			"版本：v2.3 加图标\n"
+            "Github开源地址：https://github.com/snowsong42/Qt-my_calc");
         });
 }
 
@@ -165,15 +186,7 @@ void my_calc::keyPressEvent(QKeyEvent* event)
 void my_calc::cleanupCurrentLayout()
 {
     if (currentLayout) {
-        QLayout* layout = centralWidget->layout();
-        if (layout) {
-            // 从布局中移除当前布局部件
-            QLayoutItem* item;
-            while ((item = layout->takeAt(1)) != nullptr) { // 从索引1开始（索引0是displayLineEdit）
-                delete item->widget();
-                delete item;
-            }
-        }
+		delete currentLayout;
         currentLayout = nullptr;
     }
 }
@@ -231,10 +244,17 @@ void my_calc::switchToLoanLayout()
     }
 }
 
-// 显示设置对话框
 void my_calc::showSettings()
 {
-    QMessageBox::information(this, "设置", "设置功能正在开发中...");
+    if (!settingsDialog) {
+        settingsDialog = new SettingsDialog(appSettings, this);
+		// 连接样式更改信号到样式应用槽
+        connect(settingsDialog, &SettingsDialog::styleChanged,
+            this, [this](const QString& style) {
+                applyStyle(appSettings->styleCast(style));
+			});
+    }
+    settingsDialog->exec();
 }
 
 // 核心代码:收发周转的枢纽

@@ -1,11 +1,5 @@
 ﻿#include "BaseLayout.h"
 
-// 构造函数
-BaseLayout::BaseLayout(QWidget * parent)
-    : QWidget(parent)
-{
-}
-
 void BaseLayout::setupButtonStyle(QPushButton* button, const QString& style)
 {
     button->setMinimumHeight(40);

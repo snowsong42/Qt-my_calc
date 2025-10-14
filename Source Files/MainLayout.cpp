@@ -14,7 +14,22 @@ MainLayout::MainLayout(QWidget* parent)
 
 MainLayout::~MainLayout()
 {
-    // Qt的对象树会自动管理内存
+    cleanup();
+}
+
+void MainLayout::cleanup()
+{
+    // 删除所有按钮
+    QList<QPushButton*> allButtons = findChildren<QPushButton*>();
+    for (QPushButton* button : allButtons) {
+        delete button;
+    }
+    allButtons.clear();
+    // 删除布局
+    if (gridLayout) {
+        delete gridLayout;
+        gridLayout = nullptr;
+    }
 }
 
 void MainLayout::createWidgets()

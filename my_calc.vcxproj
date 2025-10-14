@@ -24,11 +24,15 @@
     <ClCompile Include="Source Files\my_calc.cpp" />
     <ClCompile Include="Source Files\operator.cpp" />
     <ClCompile Include="Source Files\scienceLayout.cpp" />
+    <ClCompile Include="Source Files\Settings.cpp" />
+    <ClCompile Include="Source Files\SettingsDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource Files\my_calc.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header Files\Settings.h" />
+    <QtMoc Include="Header Files\SettingsDialog.h" />
     <QtMoc Include="Header Files\BaseLayout.h" />
     <ClInclude Include="Header Files\Bigint.h" />
     <ClInclude Include="Header Files\dependences.h" />
