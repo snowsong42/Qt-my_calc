@@ -1,5 +1,8 @@
 ﻿#pragma once
 #include "BaseLayout.h"
+#include <QJSEngine>
+#include <stack>
+#include <map>
 
 class MainLayout : public BaseLayout
 {
@@ -10,18 +13,24 @@ public:
     ~MainLayout() override;
 
 public slots:
-    void handleKeyPress(QKeyEvent* event) override;
 
 private slots:
     void appendNumber();
     void onBackspaceClicked();
     void onClearClicked();
-    void onCommitClicked();
+    void onCommitClicked() override;
+    void onMemoryClear();
+    void onMemoryAdd();
+    void onMemorySubtract();
+    void onMemoryRecall();
 
 private:
     void createWidgets() override;
     void setupLayout() override;
     void setupConnections() override;
+    QString evaluateExpression(const QString& expression);
+    double getCurrentDisplayValue();
+    bool isOperator(QChar c);
 
     // 数字按钮
     QPushButton* btn0;
@@ -42,15 +51,23 @@ private:
     QPushButton* btnClear;
     QPushButton* btnCommit;
 
-    // 其他按钮
+    // 内存按钮
     QPushButton* btnMC;
     QPushButton* btnMplus;
     QPushButton* btnMminus;
     QPushButton* btnMR;
+
+    // 运算按钮
     QPushButton* btnDiv;
     QPushButton* btnMul;
     QPushButton* btnMinus;
     QPushButton* btnPlus;
+
+    // 计算引擎
+    QJSEngine jsEngine;
+
+    // 内存值
+    double memoryValue;
 
     // 布局
     QGridLayout* gridLayout;

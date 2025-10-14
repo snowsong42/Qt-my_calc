@@ -1,8 +1,11 @@
 ﻿#include "LoanLayout.h"
+#include <cmath>
+#include <limits>
 
 LoanLayout::LoanLayout(QWidget* parent)
     : BaseLayout(parent)
     , currentOutputType(0)
+    , useYuanOutput(false) // 默认万元输出
 {
     createWidgets();
     setupLayout();
@@ -22,28 +25,30 @@ void LoanLayout::createWidgets()
     equalPrincipal = new QRadioButton("等额本金", repaymentGroup);
     equalPrincipalAndInterest->setChecked(true); // 默认选择等额本息
 
-    // 创建输入控件 - 设置固定大小防止过度拉伸
-    loanYears = new QComboBox(this);
-    loanYears->setMaximumWidth(120); // 限制宽度
-    for (int i = 1; i <= 30; i++) {
-        loanYears->addItem(QString::number(i) + "年");
-    }
-    loanYears->setCurrentIndex(19); // 默认20年
+    // 创建输出货币单位选择组
+    currencyGroup = new QGroupBox("输出单位", this);
+    currencyYuan = new QRadioButton("元", currencyGroup);
+    currencyWanYuan = new QRadioButton("万元", currencyGroup); // 修正变量名
+    currencyWanYuan->setChecked(true); // 默认选择万元输出
+
+    // 创建输入控件
+    loanYears = new QLineEdit(this);
+    loanYears->setPlaceholderText("1-30年");
+    loanYears->setValidator(new QIntValidator(1, 30, this));
+    loanYears->setText("20"); // 默认20年
 
     loanAmount = new QLineEdit(this);
-    loanAmount->setPlaceholderText("输入贷款金额(万元)");
-    loanAmount->setMaximumWidth(150);
+    loanAmount->setPlaceholderText("贷款金额");
     loanAmount->setValidator(new QDoubleValidator(0, 10000, 2, this));
 
     interestRate = new QLineEdit(this);
-    interestRate->setPlaceholderText("输入贷款利率(%)");
-    interestRate->setMaximumWidth(150);
-    interestRate->setValidator(new QDoubleValidator(0, 20, 2, this));
+    interestRate->setPlaceholderText("贷款利率");
+    interestRate->setValidator(new QDoubleValidator(0, 100, 2, this));
     interestRate->setText("4.9"); // 默认利率
 
-    // 创建输出类型选择 - 设置固定大小
+    // 创建输出类型选择在这里设置尺寸
     outputType = new QComboBox(this);
-    outputType->setMaximumWidth(120);
+    outputType->setMinimumHeight(15);
     outputType->addItem("月均还款");
     outputType->addItem("利息总额");
     outputType->addItem("还款总额");
@@ -53,103 +58,249 @@ void LoanLayout::createWidgets()
     btnCalculate = new QPushButton("计算", this);
     btnReset = new QPushButton("重置", this);
 
-    // 设置按钮固定大小
-    btnCalculate->setFixedSize(80, 35);
-    btnReset->setFixedSize(80, 35);
-
     // 设置按钮样式
-    btnCalculate->setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; border-radius: 5px; }");
-    btnReset->setStyleSheet("QPushButton { background-color: #f44336; color: white; border-radius: 5px; }");
+    btnCalculate->setStyleSheet(
+        "QPushButton {"
+        "    background-color: #4CAF50;"
+        "    color: white;"
+        "    border-radius: 5px;"
+        "    padding: 12px 40px;"
+        "    font-size: 14px;"
+        "}"
+        "QPushButton:hover { background-color: #45a049; }"
+        "QPushButton:pressed { background-color: #3d8b40; }"
+    );
+
+    btnReset->setStyleSheet(
+        "QPushButton {"
+        "    background-color: #f44336;"
+        "    color: white;"
+        "    border-radius: 5px;"
+        "    padding: 12px 40px;"
+        "    font-size: 14px;"
+        "}"
+        "QPushButton:hover { background-color: #da190b; }"
+        "QPushButton:pressed { background-color: #b71508; }"
+    );
+
+    // 设置输入框样式 - 使用深色文字
+    QString inputStyle =
+        "QLineEdit {"
+        "    padding: 6px 8px;"           // 减小内边距
+        "    border: 1px solid #ddd;"     // 减小边框宽度
+        "    border-radius: 4px;"         // 减小圆角
+        "    font-size: 13px;"            // 减小字体
+        "    min-height: 25px;"           // 设置最小高度
+        "}"
+        "QLineEdit:focus {"
+        "    border-color: #3498db;"
+        "}";
+
+    loanYears->setStyleSheet(inputStyle);
+    loanAmount->setStyleSheet(inputStyle);
+    interestRate->setStyleSheet(inputStyle);
+
+    // 设置下拉框样式
+    outputType->setStyleSheet(
+        "QComboBox {"
+        "    padding: 8px 12px;"
+        "    border: 2px solid #ddd;"
+        "    border-radius: 6px;"
+        "    min-height: 15px;"           // 增大最小高度
+        "    font-size: 14px;"            // 保持较大字体
+        "}"
+        "QComboBox:focus {"
+        "    border-color: #3498db;"
+        "}"
+        "QComboBox::drop-down {"
+        "    border: none;"
+        "    width: 30px;"
+        "}"
+        "QComboBox::down-arrow {"
+        "    image: none;"
+        "    border-left: 5px solid transparent;"
+        "    border-right: 5px solid transparent;"
+        "    border-top: 5px solid #7f8c8d;"
+        "    width: 0px;"
+        "    height: 0px;"
+        "}"
+        "QComboBox QAbstractItemView {"
+        "    border: 1px solid #ddd;"
+        "    border-radius: 4px;"
+        "    selection-background-color: #3498db;"
+        "    outline: none;"
+        "    min-height: 30px;"           // 下拉项最小高度
+        "}"
+    );
+
+    // 设置单选按钮样式
 }
 
 void LoanLayout::setupLayout()
 {
     mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(10);
-    mainLayout->setContentsMargins(15, 15, 15, 15);
+    mainLayout->setSpacing(12);
+    mainLayout->setContentsMargins(18, 18, 18, 18);
 
-    gridLayout = new QGridLayout();
-    gridLayout->setHorizontalSpacing(10);
-    gridLayout->setVerticalSpacing(10);
-
-    // 还款方式选择 - 单独一行
+    // 还款方式选择
     QHBoxLayout* repaymentLayout = new QHBoxLayout(repaymentGroup);
     repaymentLayout->addWidget(equalPrincipalAndInterest);
     repaymentLayout->addWidget(equalPrincipal);
-    repaymentLayout->addStretch(); // 添加弹性空间
+    repaymentLayout->addStretch();
 
-    // 输入区域 - 重新组织布局
+    // 输出货币单位选择
+    QHBoxLayout* currencyLayout = new QHBoxLayout(currencyGroup);
+    currencyLayout->addWidget(currencyYuan);
+    currencyLayout->addWidget(currencyWanYuan); // 修正变量名
+    currencyLayout->addStretch();
+
+    // 创建输入区域网格布局
+    gridLayout = new QGridLayout();
+    gridLayout->setHorizontalSpacing(15);
+    gridLayout->setVerticalSpacing(15);
+
     int row = 0;
 
-    // 第一行：贷款年限和输出类型
-    gridLayout->addWidget(new QLabel("贷款年限:", this), row, 0);
+    // 第一行：贷款年限
+    QLabel* yearsLabel = new QLabel("贷款年限 (年)", this);
+    yearsLabel->setStyleSheet("font-weight: bold; font-size: 16px;");
+    gridLayout->addWidget(yearsLabel, row, 0);
     gridLayout->addWidget(loanYears, row, 1);
-    gridLayout->addWidget(new QLabel("输出类型:", this), row, 2);
-    gridLayout->addWidget(outputType, row, 3);
     row++;
 
-    // 第二行：贷款金额和贷款利率
-    gridLayout->addWidget(new QLabel("贷款金额:", this), row, 0);
+    // 第二行：贷款金额
+    QLabel* amountLabel = new QLabel("贷款金额 (万元)", this);
+    amountLabel->setStyleSheet("font-weight: bold; font-size: 16px;");
+    gridLayout->addWidget(amountLabel, row, 0);
     gridLayout->addWidget(loanAmount, row, 1);
-    gridLayout->addWidget(new QLabel("贷款利率:", this), row, 2);
-    gridLayout->addWidget(interestRate, row, 3);
     row++;
 
-    // 第三行：按钮
+    // 第三行：贷款利率
+    QLabel* rateLabel = new QLabel("贷款利率 (%)", this);
+    rateLabel->setStyleSheet("font-weight: bold; font-size: 16px;");
+    gridLayout->addWidget(rateLabel, row, 0);
+    gridLayout->addWidget(interestRate, row, 1);
+    row++;
+
+    // 第四行：输出类型
+    QLabel* outputLabel = new QLabel("输出类型", this);
+    outputLabel->setStyleSheet("font-weight: bold; font-size: 16px;");
+    gridLayout->addWidget(outputLabel, row, 0);
+    gridLayout->addWidget(outputType, row, 1);
+    row++;
+
+    /// 第五行：按钮
     QHBoxLayout* buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch();
     buttonLayout->addWidget(btnCalculate);
+    buttonLayout->addSpacing(80);  // 添加80像素的间距
     buttonLayout->addWidget(btnReset);
     buttonLayout->addStretch();
 
-    gridLayout->addLayout(buttonLayout, row, 0, 1, 4); // 跨4列
+    gridLayout->addLayout(buttonLayout, row, 0, 1, 2);
     row++;
+
+    // 设置列比例
+    gridLayout->setColumnStretch(0, 1);
+    gridLayout->setColumnStretch(1, 2);
 
     // 添加到主布局
     mainLayout->addWidget(repaymentGroup);
+    mainLayout->addWidget(currencyGroup);
     mainLayout->addLayout(gridLayout);
-    mainLayout->addStretch(); // 添加弹性空间使布局更紧凑
-
-    // 设置列宽比例，防止控件过度拉伸
-    gridLayout->setColumnStretch(0, 1);
-    gridLayout->setColumnStretch(1, 2);
-    gridLayout->setColumnStretch(2, 1);
-    gridLayout->setColumnStretch(3, 2);
+    mainLayout->addStretch();
 }
 
 void LoanLayout::setupConnections()
 {
     // 连接计算按钮
-    connect(btnCalculate, &QPushButton::clicked, this, &LoanLayout::calculateLoan);
+    connect(btnCalculate, &QPushButton::clicked, this, &LoanLayout::onCommitClicked);
     connect(btnReset, &QPushButton::clicked, this, &LoanLayout::resetCalculation);
 
     // 连接输出类型选择
     connect(outputType, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &LoanLayout::updateOutputType);
+
+    // 连接货币单位选择
+    connect(currencyYuan, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) {
+            updateCurrencyType(0);
+        }
+        });
+    connect(currencyWanYuan, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) {
+            updateCurrencyType(1);
+        }
+        });
 }
 
-void LoanLayout::handleKeyPress(QKeyEvent* event)
+bool LoanLayout::validateInputs()
 {
-    // 只处理回车键进行计算
-    switch (event->key()) {
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        btnCalculate->click();
-        break;
-    default:
-        break;
+    // 检查贷款年限
+    if (loanYears->text().isEmpty()) {
+        QMessageBox::warning(this, "输入错误", "请输入贷款年限");
+        loanYears->setFocus();
+        return false;
     }
+
+    int years = loanYears->text().toInt();
+    if (years < 1 || years > 30) {
+        QMessageBox::warning(this, "输入错误", "贷款年限必须在1-30年之间");
+        loanYears->setFocus();
+        return false;
+    }
+
+    // 检查贷款金额
+    if (loanAmount->text().isEmpty()) {
+        QMessageBox::warning(this, "输入错误", "请输入贷款金额");
+        loanAmount->setFocus();
+        return false;
+    }
+
+    double amount = loanAmount->text().toDouble();
+    if (amount <= 0) {
+        QMessageBox::warning(this, "输入错误", "贷款金额必须大于0");
+        loanAmount->setFocus();
+        return false;
+    }
+
+    // 检查贷款利率
+    if (interestRate->text().isEmpty()) {
+        QMessageBox::warning(this, "输入错误", "请输入贷款利率");
+        interestRate->setFocus();
+        return false;
+    }
+
+    double rate = interestRate->text().toDouble();
+    if (rate <= 0 || rate > 100) {
+        QMessageBox::warning(this, "输入错误", "贷款利率必须在0-100%之间");
+        interestRate->setFocus();
+        return false;
+    }
+
+    return true;
 }
 
-void LoanLayout::calculateLoan()
+void LoanLayout::onCommitClicked()
 {
-    // 获取输入值
-    double amount = loanAmount->text().toDouble() * 10000; // 转换为元
-    double rate = interestRate->text().toDouble() / 100 / 12; // 年利率转为月利率
-    int months = (loanYears->currentIndex() + 1) * 12; // 年转为月
+    if (!validateInputs()) {
+        return;
+    }
 
-    if (amount <= 0 || rate <= 0 || months <= 0) {
-        QMessageBox::warning(this, "输入错误", "请输入有效的贷款参数");
+    // 获取输入值 - 输入统一为万元
+    double amount = loanAmount->text().toDouble() * 10000; // 输入万元转换为元
+
+    double rate = interestRate->text().toDouble() / 100 / 12; // 年利率转为月利率
+    int months = loanYears->text().toInt() * 12; // 年转为月
+
+    // 检查数据溢出
+    if (amount > std::numeric_limits<double>::max() / 1000) {
+        QMessageBox::warning(this, "计算错误", "贷款金额过大，无法计算");
+        return;
+    }
+
+    if (rate > 1.0) {
+        QMessageBox::warning(this, "计算错误", "利率过高，无法计算");
         return;
     }
 
@@ -167,35 +318,116 @@ void LoanLayout::calculateLoan()
 
 void LoanLayout::calculateEqualPrincipalAndInterest(double amount, double rate, int months)
 {
-    // 等额本息计算公式
-    double monthlyPayment = amount * rate * pow(1 + rate, months) / (pow(1 + rate, months) - 1);
-    double totalPayment = monthlyPayment * months;
-    double totalInterest = totalPayment - amount;
+    try {
+        // 等额本息计算公式
+        if (rate == 0) {
+            // 零利率情况
+            double monthlyPayment = amount / months;
+            double totalPayment = amount;
+            double totalInterest = 0;
 
-    // 存储计算结果
-    monthlyPaymentStr = QString::number(monthlyPayment, 'f', 2);
-    totalInterestStr = QString::number(totalInterest, 'f', 2);
-    totalPaymentStr = QString::number(totalPayment, 'f', 2);
+            monthlyPaymentStr = formatCurrency(monthlyPayment);
+            totalInterestStr = formatCurrency(totalInterest);
+            totalPaymentStr = formatCurrency(totalPayment);
+            return;
+        }
+
+        double temp = pow(1 + rate, months);
+        if (std::isinf(temp) || std::isnan(temp)) {
+            throw std::overflow_error("计算溢出");
+        }
+
+        double monthlyPayment = amount * rate * temp / (temp - 1);
+        double totalPayment = monthlyPayment * months;
+        double totalInterest = totalPayment - amount;
+
+        // 检查结果是否有效
+        if (std::isinf(monthlyPayment) || std::isnan(monthlyPayment) ||
+            std::isinf(totalPayment) || std::isnan(totalPayment)) {
+            throw std::overflow_error("计算结果溢出");
+        }
+
+        // 存储计算结果
+        monthlyPaymentStr = formatCurrency(monthlyPayment);
+        totalInterestStr = formatCurrency(totalInterest);
+        totalPaymentStr = formatCurrency(totalPayment);
+    }
+    catch (const std::exception& e) {
+        QMessageBox::critical(this, "计算错误", QString("计算过程中发生错误: %1").arg(e.what()));
+        monthlyPaymentStr = "计算错误";
+        totalInterestStr = "计算错误";
+        totalPaymentStr = "计算错误";
+    }
 }
 
 void LoanLayout::calculateEqualPrincipal(double amount, double rate, int months)
 {
-    // 等额本金计算公式
-    double principalPerMonth = amount / months; // 每月本金
-    double totalInterest = 0;
+    try {
+        // 等额本金计算公式
+        double principalPerMonth = amount / months;
+        double totalInterest = 0;
 
-    for (int i = 0; i < months; i++) {
-        double monthlyInterest = (amount - i * principalPerMonth) * rate;
-        totalInterest += monthlyInterest;
+        for (int i = 0; i < months; i++) {
+            double monthlyInterest = (amount - i * principalPerMonth) * rate;
+            if (std::isinf(totalInterest + monthlyInterest) || std::isnan(totalInterest + monthlyInterest)) {
+                throw std::overflow_error("利息计算溢出");
+            }
+            totalInterest += monthlyInterest;
+        }
+
+        double firstMonthPayment = principalPerMonth + amount * rate;
+        double totalPayment = amount + totalInterest;
+
+        // 检查结果是否有效
+        if (std::isinf(firstMonthPayment) || std::isnan(firstMonthPayment) ||
+            std::isinf(totalPayment) || std::isnan(totalPayment)) {
+            throw std::overflow_error("计算结果溢出");
+        }
+
+        // 存储计算结果
+        monthlyPaymentStr = formatCurrency(firstMonthPayment) + " (首月)";
+        totalInterestStr = formatCurrency(totalInterest);
+        totalPaymentStr = formatCurrency(totalPayment);
+    }
+    catch (const std::exception& e) {
+        QMessageBox::critical(this, "计算错误", QString("计算过程中发生错误: %1").arg(e.what()));
+        monthlyPaymentStr = "计算错误";
+        totalInterestStr = "计算错误";
+        totalPaymentStr = "计算错误";
+    }
+}
+
+QString LoanLayout::formatCurrency(double value) const
+{
+    if (std::isinf(value) || std::isnan(value)) {
+        return "无效数值";
     }
 
-    double firstMonthPayment = principalPerMonth + amount * rate;
-    double totalPayment = amount + totalInterest;
+    if (useYuanOutput) {
+        // 显示为元，添加千位分隔符
+        QString yuanStr = QString::number(value, 'f', 2);
 
-    // 存储计算结果
-    monthlyPaymentStr = QString::number(firstMonthPayment, 'f', 2) + " (首月)";
-    totalInterestStr = QString::number(totalInterest, 'f', 2);
-    totalPaymentStr = QString::number(totalPayment, 'f', 2);
+        // 添加千位分隔符
+        int dotIndex = yuanStr.indexOf('.');
+        QString integerPart = dotIndex >= 0 ? yuanStr.left(dotIndex) : yuanStr;
+        QString decimalPart = dotIndex >= 0 ? yuanStr.mid(dotIndex) : "";
+
+        for (int i = integerPart.length() - 3; i > 0; i -= 3) {
+            integerPart.insert(i, ',');
+        }
+
+        return integerPart + decimalPart + "元";
+    }
+    else {
+        // 显示为万元
+        double wanValue = value / 10000;
+        if (wanValue >= 10000) {
+            return QString::number(wanValue / 10000, 'f', 2) + "亿元";
+        }
+        else {
+            return QString::number(wanValue, 'f', 2) + "万元";
+        }
+    }
 }
 
 void LoanLayout::sendResultsToMainDisplay()
@@ -204,23 +436,23 @@ void LoanLayout::sendResultsToMainDisplay()
 
     switch (currentOutputType) {
     case 0: // 月均还款
-        resultText = "月均还款: " + monthlyPaymentStr + " 元";
+        resultText = "月均还款: " + monthlyPaymentStr;
         break;
     case 1: // 利息总额
-        resultText = "利息总额: " + totalInterestStr + " 元";
+        resultText = "利息总额: " + totalInterestStr;
         break;
     case 2: // 还款总额
-        resultText = "还款总额: " + totalPaymentStr + " 元";
+        resultText = "还款总额: " + totalPaymentStr;
         break;
     case 3: // 全部显示
-        resultText = "月均还款: " + monthlyPaymentStr + " 元\n" +
-            "利息总额: " + totalInterestStr + " 元\n" +
-            "还款总额: " + totalPaymentStr + " 元";
+        resultText = "月均还款: " + monthlyPaymentStr + "\n" +
+            "利息总额: " + totalInterestStr + "\n" +
+            "还款总额: " + totalPaymentStr;
         break;
     default:
-        resultText = "计算结果:\n月均还款: " + monthlyPaymentStr + " 元\n" +
-            "利息总额: " + totalInterestStr + " 元\n" +
-            "还款总额: " + totalPaymentStr + " 元";
+        resultText = "计算结果:\n月均还款: " + monthlyPaymentStr + "\n" +
+            "利息总额: " + totalInterestStr + "\n" +
+            "还款总额: " + totalPaymentStr;
         break;
     }
 
@@ -230,9 +462,9 @@ void LoanLayout::sendResultsToMainDisplay()
 
 void LoanLayout::resetCalculation()
 {
+    loanYears->setText("20");
     loanAmount->clear();
     interestRate->setText("4.9");
-    loanYears->setCurrentIndex(19); // 重置为20年
 
     // 清空存储的结果
     monthlyPaymentStr.clear();
@@ -246,6 +478,16 @@ void LoanLayout::resetCalculation()
 void LoanLayout::updateOutputType(int index)
 {
     currentOutputType = index;
+
+    // 如果有计算结果，立即更新显示
+    if (!monthlyPaymentStr.isEmpty()) {
+        sendResultsToMainDisplay();
+    }
+}
+
+void LoanLayout::updateCurrencyType(int index)
+{
+    useYuanOutput = (index == 0); // 0=元输出, 1=万元输出
 
     // 如果有计算结果，立即更新显示
     if (!monthlyPaymentStr.isEmpty()) {

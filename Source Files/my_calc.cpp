@@ -61,12 +61,14 @@ void my_calc::createWidgets()
     displayLineEdit->setStyleSheet(
         "QLineEdit {"
         "    border: 2px solid #A0A0A0;" /* 边框宽度为2px，颜色为#A0A0A0 */
-        "    border - radius: 3px;" /* 边框圆角 */
+        "    border - radius: 4px;" /* 边框圆角 */
         "    padding - left: 5px;" /* 文本距离左边界有5px */
-        "    background - color: #F2F2F2;" /* 背景颜色 */
-        "    color: #A0A0A0;" /* 文本颜色 */
+        "    background - color: #F2F2F2;" /* 背景颜色 *//* 文本颜色不设置 */
         "    selection - background - color: #A0A0A0;" /* 选中文本的背景颜色 */
         "    selection - color: #F2F2F2;" /* 选中文本的颜色 */
+        "}"
+        "QLineEdit:focus {"
+        "    border-color: #3498db;"
         "}"
     );
 

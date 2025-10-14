@@ -182,32 +182,6 @@ void ScienceLayout::setupConnections()
     connect(btnExp, &QPushButton::clicked, this, &ScienceLayout::onFunctionClicked);
 }
 
-void ScienceLayout::handleKeyPress(QKeyEvent* event)
-{
-    // 允许所有键盘输入 - 直接将字符添加到显示框
-    QString text = emit getDisplayTextRequested();
-
-    if (event->key() == Qt::Key_Backspace) {
-        if (!text.isEmpty()) {
-            text.chop(1);
-            emit displaySetRequested(text);
-        }
-    }
-    else if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
-        onCommitClicked();
-    }
-    else if (event->key() == Qt::Key_Escape) {
-        emit displayClearRequested();
-    }
-    else {
-        // 获取按键的文本，直接添加到显示框
-        QString keyText = event->text();
-        if (!keyText.isEmpty() && keyText != "\r" && keyText != "\n") {
-            emit displaySetRequested(text + keyText);
-        }
-    }
-}
-
 void ScienceLayout::appendNumber()
 {
     // 加一个字符

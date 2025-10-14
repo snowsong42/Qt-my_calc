@@ -1,8 +1,11 @@
 ﻿#include "MainLayout.h"
 #include "BaseLayout.h"
+#include <QJSEngine>
+#include <cmath>
 
 MainLayout::MainLayout(QWidget* parent)
     : BaseLayout(parent)
+    , memoryValue(0.0)
 {
     createWidgets();
     setupLayout();
@@ -35,11 +38,13 @@ void MainLayout::createWidgets()
     btnClear = new QPushButton("C", this);
     btnCommit = new QPushButton("=", this);
 
-    // 创建其他按钮
+    // 创建内存按钮
     btnMC = new QPushButton("MC", this);
     btnMplus = new QPushButton("M+", this);
     btnMminus = new QPushButton("M-", this);
     btnMR = new QPushButton("MR", this);
+
+    // 创建运算按钮
     btnDiv = new QPushButton("÷", this);
     btnMul = new QPushButton("×", this);
     btnMinus = new QPushButton("-", this);
@@ -57,6 +62,13 @@ void MainLayout::createWidgets()
     btnCommit->setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; }");
     btnClear->setStyleSheet("QPushButton { background-color: #f44336; color: white; }");
     btnBackspace->setStyleSheet("QPushButton { background-color: #ff9800; color: white; }");
+
+    // 内存按钮样式
+    QString memoryStyle = "QPushButton { background-color: #9C27B0; color: white; }";
+    btnMC->setStyleSheet(memoryStyle);
+    btnMplus->setStyleSheet(memoryStyle);
+    btnMminus->setStyleSheet(memoryStyle);
+    btnMR->setStyleSheet(memoryStyle);
 }
 
 void MainLayout::setupLayout()
@@ -119,6 +131,12 @@ void MainLayout::setupConnections()
     connect(btnClear, &QPushButton::clicked, this, &MainLayout::onClearClicked);
     connect(btnCommit, &QPushButton::clicked, this, &MainLayout::onCommitClicked);
 
+    // 连接内存按钮信号
+    connect(btnMC, &QPushButton::clicked, this, &MainLayout::onMemoryClear);
+    connect(btnMplus, &QPushButton::clicked, this, &MainLayout::onMemoryAdd);
+    connect(btnMminus, &QPushButton::clicked, this, &MainLayout::onMemorySubtract);
+    connect(btnMR, &QPushButton::clicked, this, &MainLayout::onMemoryRecall);
+
     // 连接数字按钮信号
     connect(btn0, &QPushButton::clicked, this, &MainLayout::appendNumber);
     connect(btn1, &QPushButton::clicked, this, &MainLayout::appendNumber);
@@ -132,61 +150,12 @@ void MainLayout::setupConnections()
     connect(btn9, &QPushButton::clicked, this, &MainLayout::appendNumber);
     connect(btnPercent, &QPushButton::clicked, this, &MainLayout::appendNumber);
     connect(btnPeriod, &QPushButton::clicked, this, &MainLayout::appendNumber);
-}
 
-void MainLayout::handleKeyPress(QKeyEvent* event)
-{
-    // 处理键盘按键事件
-    switch (event->key()) {
-    case Qt::Key_0:
-        btn0->click();
-        break;
-    case Qt::Key_1:
-        btn1->click();
-        break;
-    case Qt::Key_2:
-        btn2->click();
-        break;
-    case Qt::Key_3:
-        btn3->click();
-        break;
-    case Qt::Key_4:
-        btn4->click();
-        break;
-    case Qt::Key_5:
-        btn5->click();
-        break;
-    case Qt::Key_6:
-        btn6->click();
-        break;
-    case Qt::Key_7:
-        btn7->click();
-        break;
-    case Qt::Key_8:
-        btn8->click();
-        break;
-    case Qt::Key_9:
-        btn9->click();
-        break;
-    case Qt::Key_Percent:  // %号
-        btnPercent->click();
-        break;
-    case Qt::Key_Period: // .号
-        btnPeriod->click();
-        break;
-    case Qt::Key_Backspace:
-        btnBackspace->click();
-        break;
-    case Qt::Key_Delete:
-        btnClear->click();
-        break;
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        btnCommit->click();
-        break;
-    default:
-        break;
-    }
+    // 连接运算按钮信号
+    connect(btnPlus, &QPushButton::clicked, this, &MainLayout::appendNumber);
+    connect(btnMinus, &QPushButton::clicked, this, &MainLayout::appendNumber);
+    connect(btnMul, &QPushButton::clicked, this, &MainLayout::appendNumber);
+    connect(btnDiv, &QPushButton::clicked, this, &MainLayout::appendNumber);
 }
 
 // 核心代码：通信逻辑的实现
@@ -195,8 +164,7 @@ void MainLayout::appendNumber()
     // 加一个字符
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString text = emit getDisplayTextRequested(); // 请求获取表达式
-    emit displayClearRequested(); // 先清空
-	emit displaySetRequested(text + button->text()); // 再设置
+    emit displaySetRequested(text + button->text());
 }
 
 void MainLayout::onBackspaceClicked()
@@ -206,20 +174,113 @@ void MainLayout::onBackspaceClicked()
     if (!text.isEmpty()) {
         text.chop(1);
     }
-	emit displayClearRequested(); // 先清空
-	emit displaySetRequested(text); // 再设置
+    emit displaySetRequested(text);
 }
 
 void MainLayout::onClearClicked()
 {
-    emit displayClearRequested(); // 使用基类信号
+    emit displayClearRequested();
 }
 
 void MainLayout::onCommitClicked()
 {
-    QString s = emit getDisplayTextRequested(); // 请求获取表达式
+    QString expression = emit getDisplayTextRequested(); // 请求获取表达式
 
-    // 处理计算
-    QString result = "正在开发中";
-    emit displaySetRequested(s + result);
+    if (expression.isEmpty()) {
+        return;
+    }
+
+    QString result = evaluateExpression(expression);
+    emit displaySetRequested(result);
+}
+
+void MainLayout::onMemoryClear()
+{
+    memoryValue = 0.0;
+}
+
+void MainLayout::onMemoryAdd()
+{
+    double currentValue = getCurrentDisplayValue();
+    memoryValue += currentValue;
+}
+
+void MainLayout::onMemorySubtract()
+{
+    double currentValue = getCurrentDisplayValue();
+    memoryValue -= currentValue;
+}
+
+void MainLayout::onMemoryRecall()
+{
+    emit displaySetRequested(QString::number(memoryValue, 'g', 10));
+}
+
+double MainLayout::getCurrentDisplayValue()
+{
+    QString text = emit getDisplayTextRequested();
+    if (text.isEmpty()) {
+        return 0.0;
+    }
+
+    // 如果是表达式，先计算结果
+    if (text.contains(QChar('+')) || text.contains(QChar('-')) || text.contains(QChar('×')) ||
+        text.contains(QChar('÷')) || text.contains(QChar('*')) || text.contains(QChar('/'))) {
+        QString result = evaluateExpression(text);
+        return result.toDouble();
+    }
+
+    return text.toDouble();
+}
+
+bool MainLayout::isOperator(QChar c)
+{
+    return c == QChar('+') || c == QChar('-') || c == QChar('×') || c == QChar('÷') || c == QChar('*') || c == QChar('/');
+}
+
+QString MainLayout::evaluateExpression(const QString& expression)
+{
+    try {
+        // 预处理表达式，替换特殊符号
+        QString processedExpr = expression;
+
+        // 替换数学符号
+        processedExpr.replace("×", "*");
+        processedExpr.replace("÷", "/");
+
+        // 处理百分号
+        if (processedExpr.contains('%')) {
+            // 简单的百分号处理：将 % 替换为 /100
+            processedExpr.replace('%', "/100");
+        }
+
+        // 使用QJSEngine计算表达式
+        QJSValue result = jsEngine.evaluate(processedExpr);
+
+        if (result.isError()) {
+            return "错误: " + result.toString();
+        }
+
+        double value = result.toNumber();
+
+        // 处理特殊值
+        if (std::isinf(value)) {
+            return "错误: 无穷大";
+        }
+        if (std::isnan(value)) {
+            return "错误: 非数字";
+        }
+
+        // 格式化输出
+        if (qAbs(value) < 1e-10) value = 0; // 处理浮点误差
+
+        return QString::number(value, 'g', 10);
+
+    }
+    catch (const std::exception& e) {
+        return QString("错误: %1").arg(e.what());
+    }
+    catch (...) {
+        return "错误: 计算失败";
+    }
 }

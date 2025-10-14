@@ -13,13 +13,13 @@ public:
     ~ScienceLayout() override;
 
 public slots:
-    void handleKeyPress(QKeyEvent* event) override;
+	// 直接继承基类的KeyPress处理
 
 private slots:
     void appendNumber();
     void onBackspaceClicked();
     void onClearClicked();
-    void onCommitClicked();
+	void onCommitClicked() override; // 处理等号按钮点击
     void onFunctionClicked(); // 处理函数按钮点击
 
 private:
