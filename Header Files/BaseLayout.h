@@ -16,12 +16,9 @@ public:
 
 signals:
     // 统一的通信接口 - 所有布局都通过这些信号与主界面通信
-    void displayUpdateRequested(const QString& text);   // 追加文本
+    QString getDisplayTextRequested();                  // 请求获取显示文本
     void displaySetRequested(const QString& text);      // 设置文本
     void displayClearRequested();                       // 清空显示
-    void backspaceRequested();                          // 删除字符
-    QString getDisplayTextRequested();                  // 请求获取显示文本
-    void calculateRequested(const QString& expression); // 计算请求
 
 public slots:
     // 统一的键盘事件处理接口

@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "BaseLayout.h"
 #include <QHash>
+#include <QtQml/QJSEngine>
+#include <cmath>
 
 class ScienceLayout : public BaseLayout
 {
@@ -18,13 +20,15 @@ private slots:
     void onBackspaceClicked();
     void onClearClicked();
     void onCommitClicked();
+    void onFunctionClicked(); // 处理函数按钮点击
 
 private:
     void createWidgets() override;
     void setupLayout() override;
     void setupConnections() override;
-    void setupScientificButtons();
-
+    QString evaluateExpression(const QString& expression);
+    double factorial(double n);
+    double degreesToRadians(double degrees);
 
     // 基本数字按钮
     QPushButton* btn0;
@@ -49,25 +53,24 @@ private:
     // 功能按钮
     QPushButton* btnClear;
     QPushButton* btnBackspace;
-    QPushButton* btnPercent;
 
     // 科学计算按钮
-    QPushButton* btnSecond;    // 2nd
     QPushButton* btnPi;        // π
     QPushButton* btnE;         // e
-    QPushButton* btnSquare;    // x²
-    QPushButton* btnPower;     // x^y
-    QPushButton* btnTenPower;  // 10^x
-    QPushButton* btnLog;       // log
-    QPushButton* btnLn;        // ln
-    QPushButton* btnExp;       // exp
+    QPushButton* btnSin;       // sin
+    QPushButton* btnCos;       // cos
+    QPushButton* btnTan;       // tan
+    QPushButton* btnSqrt;      // √
+    QPushButton* btnReciprocal; // 1/x
+    QPushButton* btnPower;     // ^
     QPushButton* btnMod;       // mod
-    QPushButton* btnLeftParen; // (
-    QPushButton* btnRightParen; // )
-    QPushButton* btnFactorial; // n!
+    QPushButton* btnLn;        // ln
+    QPushButton* btnLog;       // log
+    QPushButton* btnExp;       // exp
 
-    // 科学计算函数映射
-    QHash<QString, QString> scientificFunctions;
+    // JavaScript引擎用于计算表达式
+    QJSEngine jsEngine;
+
     // 布局
     QGridLayout* gridLayout;
 };

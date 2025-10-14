@@ -9,7 +9,8 @@ my_calc::my_calc(QWidget* parent)
 {
     // 设置窗口属性
     setWindowTitle("计算器");
-    setFixedSize(600, 600);
+    setMinimumSize(400, 500); // 设置最小大小，允许缩放
+    resize(500, 600); // 初始大小
 
     // 创建控件
     createWidgets();
@@ -33,16 +34,43 @@ void my_calc::createWidgets()
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
+    // 创建主布局
+    QVBoxLayout* mainVLayout = new QVBoxLayout(centralWidget);
+    mainVLayout->setSpacing(10);
+    mainVLayout->setContentsMargins(15, 15, 15, 15);
+
     // 创建显示框
-    displayLineEdit = new QLineEdit(centralWidget);
-    displayLineEdit->setMinimumHeight(40);
-    displayLineEdit->setFont(QFont("Century Gothic", 24));
-    displayLineEdit->setStyleSheet("font: 24pt \"Century Gothic\";");
+    displayLineEdit = new QLineEdit();
+    displayLineEdit->setMinimumHeight(70);
+    displayLineEdit->setFont(QFont("Century Gothic", 17));
     displayLineEdit->setText("");
     displayLineEdit->setAlignment(Qt::AlignRight);
-    displayLineEdit->setReadOnly(true);
+    displayLineEdit->setReadOnly(false);
     displayLineEdit->setPlaceholderText("请输入表达式...");
-    displayLineEdit->setGeometry(30, 30, 411, 71);
+    /*
+    displayLineEdit->setStyleSheet(
+        "QLineEdit {"
+        "    border: 2px solid #ccc;"
+        "    border-radius: 5px;"
+        "    padding: 5px 10px;"
+        "    background-color: #f9f9f9;"
+        "    font: 16pt 'Century Gothic';"
+        "}"
+    );
+    */
+    displayLineEdit->setStyleSheet(
+        "QLineEdit {"
+        "    border: 2px solid #A0A0A0;" /* 边框宽度为2px，颜色为#A0A0A0 */
+        "    border - radius: 3px;" /* 边框圆角 */
+        "    padding - left: 5px;" /* 文本距离左边界有5px */
+        "    background - color: #F2F2F2;" /* 背景颜色 */
+        "    color: #A0A0A0;" /* 文本颜色 */
+        "    selection - background - color: #A0A0A0;" /* 选中文本的背景颜色 */
+        "    selection - color: #F2F2F2;" /* 选中文本的颜色 */
+        "}"
+    );
+
+    mainVLayout->addWidget(displayLineEdit);
 
     // 创建菜单子动作
     mainCalcAction = new QAction("主计算器", this);
@@ -59,7 +87,7 @@ void my_calc::createWidgets()
 
     settingsAction = new QAction("设置", this);
     settingsAction->setStatusTip("应用程序设置");
-    settingsAction->setShortcut(QKeySequence("Ctrl+P"));
+    settingsAction->setShortcut(QKeySequence("Ctrl+S"));
 
     exitAction = new QAction("退出", this);
     exitAction->setStatusTip("退出应用程序");
@@ -77,11 +105,11 @@ void my_calc::createWidgets()
     modeMenu->addSeparator();
     modeMenu->addAction(exitAction);
 
-	// 编辑
+    // 编辑
     editMenu = menuBar()->addMenu("编辑");
     editMenu->addAction(settingsAction);
 
-	// 帮助
+    // 帮助
     helpMenu = menuBar()->addMenu("帮助");
     helpMenu->addAction(aboutAction);
 
@@ -134,8 +162,15 @@ void my_calc::keyPressEvent(QKeyEvent* event)
 void my_calc::cleanupCurrentLayout()
 {
     if (currentLayout) {
-        currentLayout->setParent(nullptr);
-        currentLayout->deleteLater();
+        QLayout* layout = centralWidget->layout();
+        if (layout) {
+            // 从布局中移除当前布局部件
+            QLayoutItem* item;
+            while ((item = layout->takeAt(1)) != nullptr) { // 从索引1开始（索引0是displayLineEdit）
+                delete item->widget();
+                delete item;
+            }
+        }
         currentLayout = nullptr;
     }
 }
@@ -145,85 +180,75 @@ void my_calc::connectLayoutSignals(BaseLayout* layout)
 {
     if (!layout) return;
 
-	// 统一接入所有布局的共同信号，借助BaseLayout
-    connect(layout, &BaseLayout::displayUpdateRequested, this, &my_calc::updateDisplay);
+    // 统一接入所有布局的共同信号，借助BaseLayout
+    connect(layout, &BaseLayout::getDisplayTextRequested, this, &my_calc::getDisplayText);
     connect(layout, &BaseLayout::displaySetRequested, this, &my_calc::setDisplay);
     connect(layout, &BaseLayout::displayClearRequested, this, &my_calc::clearDisplay);
-    connect(layout, &BaseLayout::backspaceRequested, this, &my_calc::backspaceDisplay);
-    connect(layout, &BaseLayout::getDisplayTextRequested, this, &my_calc::getDisplayText);
 }
 
 // 切换到主计算器布局
 void my_calc::switchToMainLayout()
 {
     cleanupCurrentLayout();
-    mainLayout = new MainLayout(centralWidget);
+    mainLayout = new MainLayout();
     currentLayout = mainLayout;
     connectLayoutSignals(mainLayout);
-    mainLayout->setGeometry(0, 110, width(), height() - 110);
-    mainLayout->show();
+
+    QVBoxLayout* mainVLayout = qobject_cast<QVBoxLayout*>(centralWidget->layout());
+    if (mainVLayout) {
+        mainVLayout->addWidget(mainLayout);
+    }
 }
 
 // 切换到科学计算器布局
 void my_calc::switchToScienceLayout()
 {
     cleanupCurrentLayout();
-    scienceLayout = new ScienceLayout(centralWidget);
+    scienceLayout = new ScienceLayout();
     currentLayout = scienceLayout;
     connectLayoutSignals(scienceLayout);
-    scienceLayout->setGeometry(0, 110, width(), height() - 110);
-    scienceLayout->show();
+
+    QVBoxLayout* mainVLayout = qobject_cast<QVBoxLayout*>(centralWidget->layout());
+    if (mainVLayout) {
+        mainVLayout->addWidget(scienceLayout);
+    }
 }
 
 // 切换到贷款计算器布局
 void my_calc::switchToLoanLayout()
 {
     cleanupCurrentLayout();
-    loanLayout = new LoanLayout(centralWidget);
+    loanLayout = new LoanLayout();
     currentLayout = loanLayout;
     connectLayoutSignals(loanLayout);
-    loanLayout->setGeometry(0, 110, width(), height() - 110);
-    loanLayout->show();
+
+    QVBoxLayout* mainVLayout = qobject_cast<QVBoxLayout*>(centralWidget->layout());
+    if (mainVLayout) {
+        mainVLayout->addWidget(loanLayout);
+    }
 }
 
-// 显示设置对话框（占位）
+// 显示设置对话框
 void my_calc::showSettings()
 {
     QMessageBox::information(this, "设置", "设置功能正在开发中...");
 }
 
-// 操作显示框的核心代码，是收发周转的枢纽
-void my_calc::updateDisplay(const QString& text)
-{
-	// 在显示框末尾追加文本
-    QString currentText = displayLineEdit->text();
-    displayLineEdit->setText(currentText + text);
-}
-
+// 核心代码:收发周转的枢纽
+// 三个槽函数的执行代码，用于操作显示框
 void my_calc::setDisplay(const QString& text)
 {
-	// 直接设置显示框内容
+    // 直接设置显示框内容
     displayLineEdit->setText(text);
-}
-
-void my_calc::backspaceDisplay()
-{
-	// 删除显示框最后一个字符
-    QString text = displayLineEdit->text();
-    if (!text.isEmpty()) {
-        text.chop(1);
-        displayLineEdit->setText(text);
-	}
 }
 
 void my_calc::clearDisplay()
 {
-	// 清空显示框
+    // 清空显示框
     displayLineEdit->clear();
 }
 
 QString my_calc::getDisplayText() const {
-	// 获取显示框内容
-	return displayLineEdit->text();
+    // 获取显示框内容
+    return displayLineEdit->text();
 }
-

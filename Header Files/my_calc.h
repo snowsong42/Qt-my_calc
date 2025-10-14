@@ -33,12 +33,10 @@ public slots:
 	void switchToMainLayout(); // 切换到主计算器
 	void switchToScienceLayout(); // 切换到科学计算器
     void switchToLoanLayout();  // 切换到贷款计算器
-	void showSettings(); // 显示对话框设置
+	void showSettings(); // 显示设置
 
     // 操作显示框的核心代码，是收发周转的枢纽
-	void updateDisplay(const QString& text); // 更新显示框内容
 	void setDisplay(const QString& text);   // 直接设置显示框内容
-	void backspaceDisplay();                // 删除显示框最后一个字符
 	void clearDisplay();                    // 清空显示框内容
     QString getDisplayText() const;         // 获取显示框内容
     

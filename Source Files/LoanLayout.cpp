@@ -65,7 +65,12 @@ void LoanLayout::createWidgets()
 void LoanLayout::setupLayout()
 {
     mainLayout = new QVBoxLayout(this);
+    mainLayout->setSpacing(10);
+    mainLayout->setContentsMargins(15, 15, 15, 15);
+
     gridLayout = new QGridLayout();
+    gridLayout->setHorizontalSpacing(10);
+    gridLayout->setVerticalSpacing(10);
 
     // 还款方式选择 - 单独一行
     QHBoxLayout* repaymentLayout = new QHBoxLayout(repaymentGroup);
@@ -104,12 +109,6 @@ void LoanLayout::setupLayout()
     mainLayout->addWidget(repaymentGroup);
     mainLayout->addLayout(gridLayout);
     mainLayout->addStretch(); // 添加弹性空间使布局更紧凑
-
-    // 设置布局边距和间距
-    mainLayout->setContentsMargins(15, 15, 15, 15);
-    mainLayout->setSpacing(15);
-    gridLayout->setHorizontalSpacing(15);
-    gridLayout->setVerticalSpacing(15);
 
     // 设置列宽比例，防止控件过度拉伸
     gridLayout->setColumnStretch(0, 1);
@@ -199,7 +198,6 @@ void LoanLayout::calculateEqualPrincipal(double amount, double rate, int months)
     totalPaymentStr = QString::number(totalPayment, 'f', 2);
 }
 
-// 根据当前选择的输出类型发送结果到主界面
 void LoanLayout::sendResultsToMainDisplay()
 {
     QString resultText;
@@ -220,7 +218,7 @@ void LoanLayout::sendResultsToMainDisplay()
             "还款总额: " + totalPaymentStr + " 元";
         break;
     default:
-        resultText = "月均还款: " + monthlyPaymentStr + " 元\n" +
+        resultText = "计算结果:\n月均还款: " + monthlyPaymentStr + " 元\n" +
             "利息总额: " + totalInterestStr + " 元\n" +
             "还款总额: " + totalPaymentStr + " 元";
         break;

@@ -31,7 +31,7 @@ void MainLayout::createWidgets()
     btnPeriod = new QPushButton(".", this);
 
     // 创建功能按钮
-    btnBackspace = new QPushButton("删除", this);
+    btnBackspace = new QPushButton("⌫", this);
     btnClear = new QPushButton("C", this);
     btnCommit = new QPushButton("=", this);
 
@@ -45,21 +45,27 @@ void MainLayout::createWidgets()
     btnMinus = new QPushButton("-", this);
     btnPlus = new QPushButton("+", this);
 
-    // 设置按钮样式
+    // 设置按钮样式 - 更小的按钮
     QList<QPushButton*> allButtons = findChildren<QPushButton*>();
     for (QPushButton* button : allButtons) {
         setupButtonStyle(button);
-        button->setMinimumHeight(50); // 主计算器按钮更高
+        button->setMinimumSize(45, 45); // 更小的按钮
+        button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }
-    btnBackspace->setMinimumHeight(40);
-    btnCommit->setMinimumHeight(100);
+
+    // 特殊按钮样式
+    btnCommit->setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; }");
+    btnClear->setStyleSheet("QPushButton { background-color: #f44336; color: white; }");
+    btnBackspace->setStyleSheet("QPushButton { background-color: #ff9800; color: white; }");
 }
 
 void MainLayout::setupLayout()
 {
     // 创建主布局
     gridLayout = new QGridLayout(this);
-    gridLayout->setHorizontalSpacing(15);
+    gridLayout->setHorizontalSpacing(5);  // 减少水平间距
+    gridLayout->setVerticalSpacing(5);    // 减少垂直间距
+    gridLayout->setContentsMargins(10, 10, 10, 10);
 
     // 布局按钮
     // 第一行
@@ -75,9 +81,9 @@ void MainLayout::setupLayout()
     gridLayout->addWidget(btnBackspace, 1, 3);
 
     // 第三行
-    gridLayout->addWidget(btn1, 2, 0);
-    gridLayout->addWidget(btn2, 2, 1);
-    gridLayout->addWidget(btn3, 2, 2);
+    gridLayout->addWidget(btn7, 2, 0);
+    gridLayout->addWidget(btn8, 2, 1);
+    gridLayout->addWidget(btn9, 2, 2);
     gridLayout->addWidget(btnMinus, 2, 3);
 
     // 第四行
@@ -87,9 +93,9 @@ void MainLayout::setupLayout()
     gridLayout->addWidget(btnPlus, 3, 3);
 
     // 第五行
-    gridLayout->addWidget(btn7, 4, 0);
-    gridLayout->addWidget(btn8, 4, 1);
-    gridLayout->addWidget(btn9, 4, 2);
+    gridLayout->addWidget(btn1, 4, 0);
+    gridLayout->addWidget(btn2, 4, 1);
+    gridLayout->addWidget(btn3, 4, 2);
     gridLayout->addWidget(btnCommit, 4, 3, 2, 1); // 跨2行
 
     // 第六行
@@ -97,8 +103,13 @@ void MainLayout::setupLayout()
     gridLayout->addWidget(btn0, 5, 1);
     gridLayout->addWidget(btnPeriod, 5, 2);
 
-    // 设置布局边距
-    gridLayout->setContentsMargins(50, 0, 50, 30);
+    // 设置列和行的拉伸因子，使按钮均匀分布
+    for (int i = 0; i < 4; ++i) {
+        gridLayout->setColumnStretch(i, 1);
+    }
+    for (int i = 0; i < 6; ++i) {
+        gridLayout->setRowStretch(i, 1);
+    }
 }
 
 void MainLayout::setupConnections()
@@ -181,15 +192,22 @@ void MainLayout::handleKeyPress(QKeyEvent* event)
 // 核心代码：通信逻辑的实现
 void MainLayout::appendNumber()
 {
+    // 加一个字符
     QPushButton* button = qobject_cast<QPushButton*>(sender());
-    if (button) {
-        emit displayUpdateRequested(button->text()); // 使用基类信号
-    }
+    QString text = emit getDisplayTextRequested(); // 请求获取表达式
+    emit displayClearRequested(); // 先清空
+	emit displaySetRequested(text + button->text()); // 再设置
 }
 
 void MainLayout::onBackspaceClicked()
 {
-    emit backspaceRequested(); // 使用基类信号
+    QString text = emit getDisplayTextRequested(); // 请求获取表达式
+    // 删除显示框最后一个字符
+    if (!text.isEmpty()) {
+        text.chop(1);
+    }
+	emit displayClearRequested(); // 先清空
+	emit displaySetRequested(text); // 再设置
 }
 
 void MainLayout::onClearClicked()
@@ -203,5 +221,5 @@ void MainLayout::onCommitClicked()
 
     // 处理计算
     QString result = "正在开发中";
-    emit displaySetRequested(s+result);
+    emit displaySetRequested(s + result);
 }
