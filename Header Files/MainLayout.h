@@ -15,10 +15,7 @@ public:
 public slots:
 
 private slots:
-    void appendNumber();
-    void onBackspaceClicked();
-    void onClearClicked();
-    void onCommitClicked() override;
+	void onCommitClicked() override; // override,处理等号按钮点击
     void onMemoryClear();
     void onMemoryAdd();
     void onMemorySubtract();
@@ -34,25 +31,6 @@ private:
 	// 自身的工具方法
     QString evaluateExpression(const QString& expression);
     double getCurrentDisplayValue();
-
-    // 数字按钮
-    QPushButton* btn0;
-    QPushButton* btn1;
-    QPushButton* btn2;
-    QPushButton* btn3;
-    QPushButton* btn4;
-    QPushButton* btn5;
-    QPushButton* btn6;
-    QPushButton* btn7;
-    QPushButton* btn8;
-    QPushButton* btn9;
-    QPushButton* btnPercent;
-    QPushButton* btnPeriod;
-
-    // 功能按钮
-    QPushButton* btnBackspace;
-    QPushButton* btnClear;
-    QPushButton* btnCommit;
 
     // 内存按钮
     QPushButton* btnMC;

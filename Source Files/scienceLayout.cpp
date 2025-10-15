@@ -5,6 +5,8 @@ ScienceLayout::ScienceLayout(QWidget* parent)
 {
     createWidgets();
     setupLayout();
+    // 设置通用连接
+    setupCommonConnections();
     setupConnections();
 }
 
@@ -48,7 +50,7 @@ void ScienceLayout::createWidgets()
     btnMinus = new QPushButton("-", this);
     btnMul = new QPushButton("×", this);
     btnDiv = new QPushButton("÷", this);
-    btnEquals = new QPushButton("=", this);
+    btnCommit = new QPushButton("=", this);
 
     // 创建功能按钮
     btnClear = new QPushButton("C", this);
@@ -77,7 +79,7 @@ void ScienceLayout::createWidgets()
     }
 
     // 特殊按钮样式
-    btnEquals->setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; }");
+    btnCommit->setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; }");
     btnClear->setStyleSheet("QPushButton { background-color: #f44336; color: white; }");
     btnBackspace->setStyleSheet("QPushButton { background-color: #ff9800; color: white; }");
 
@@ -143,7 +145,7 @@ void ScienceLayout::setupLayout()
     // 第5行: ., 0, =, ÷, exp
     gridLayout->addWidget(btnPeriod, 5, 0);
     gridLayout->addWidget(btn0, 5, 1);
-    gridLayout->addWidget(btnEquals, 5, 2);
+    gridLayout->addWidget(btnCommit, 5, 2);
     gridLayout->addWidget(btnDiv, 5, 3);
     gridLayout->addWidget(btnExp, 5, 4);
 
@@ -158,19 +160,9 @@ void ScienceLayout::setupLayout()
 
 void ScienceLayout::setupConnections()
 {
-    // 连接数字按钮
-    connect(btn0, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn1, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn2, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn3, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn4, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn5, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn6, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn7, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn8, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btn9, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-    connect(btnPeriod, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-
+	// 连接数字按钮继承自BaseLayout
+    // 连接功能按钮继承自BaseLayout
+    
     // 连接基本运算按钮
     connect(btnPlus, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
     connect(btnMinus, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
@@ -178,11 +170,6 @@ void ScienceLayout::setupConnections()
     connect(btnDiv, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
     connect(btnPower, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
     connect(btnMod, &QPushButton::clicked, this, &ScienceLayout::appendNumber);
-
-    // 连接功能按钮
-    connect(btnBackspace, &QPushButton::clicked, this, &ScienceLayout::onBackspaceClicked);
-    connect(btnClear, &QPushButton::clicked, this, &ScienceLayout::onClearClicked);
-    connect(btnEquals, &QPushButton::clicked, this, &ScienceLayout::onCommitClicked);
 
     // 连接科学计算按钮
     connect(btnPi, &QPushButton::clicked, this, &ScienceLayout::onFunctionClicked);
@@ -195,14 +182,6 @@ void ScienceLayout::setupConnections()
     connect(btnLn, &QPushButton::clicked, this, &ScienceLayout::onFunctionClicked);
     connect(btnLog, &QPushButton::clicked, this, &ScienceLayout::onFunctionClicked);
     connect(btnExp, &QPushButton::clicked, this, &ScienceLayout::onFunctionClicked);
-}
-
-void ScienceLayout::appendNumber()
-{
-    // 加一个字符
-    QPushButton* button = qobject_cast<QPushButton*>(sender());
-    QString text = emit getDisplayTextRequested(); // 请求获取表达式
-    emit displaySetRequested(text + button->text());
 }
 
 void ScienceLayout::onFunctionClicked()
@@ -265,21 +244,7 @@ void ScienceLayout::onFunctionClicked()
     emit displaySetRequested(text + functionText);
 }
 
-void ScienceLayout::onBackspaceClicked()
-{
-    QString text = emit getDisplayTextRequested(); // 请求获取表达式
-    // 删除显示框最后一个字符
-    if (!text.isEmpty()) {
-        text.chop(1);
-    }
-    emit displaySetRequested(text);
-}
-
-void ScienceLayout::onClearClicked()
-{
-    emit displayClearRequested();
-}
-
+// 提交按钮处理,override基类的onCommitClicked()
 void ScienceLayout::onCommitClicked()
 {
     QString expression = emit getDisplayTextRequested(); // 请求获取表达式

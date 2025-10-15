@@ -53,9 +53,9 @@ void LoanLayout::cleanup()
     }
 
     // 清理按钮
-    if (btnCalculate) {
-        delete btnCalculate;
-        btnCalculate = nullptr;
+    if (btnCommit) {
+        delete btnCommit;
+        btnCommit = nullptr;
     }
 
     if (btnReset) {
@@ -118,11 +118,11 @@ void LoanLayout::createWidgets()
     outputType->addItem("全部显示");
 
     // 创建按钮
-    btnCalculate = new QPushButton("计算", this);
+    btnCommit = new QPushButton("计算", this);
     btnReset = new QPushButton("重置", this);
 
     // 设置按钮样式
-    btnCalculate->setStyleSheet(
+    btnCommit->setStyleSheet(
         "QPushButton {"
         "    background-color: #4CAF50;"
         "    color: white;"
@@ -255,7 +255,7 @@ void LoanLayout::setupLayout()
     /// 第五行：按钮
     QHBoxLayout* buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch();
-    buttonLayout->addWidget(btnCalculate);
+    buttonLayout->addWidget(btnCommit);
     buttonLayout->addSpacing(80);  // 添加80像素的间距
     buttonLayout->addWidget(btnReset);
     buttonLayout->addStretch();
@@ -277,7 +277,7 @@ void LoanLayout::setupLayout()
 void LoanLayout::setupConnections()
 {
     // 连接计算按钮
-    connect(btnCalculate, &QPushButton::clicked, this, &LoanLayout::onCommitClicked);
+    connect(btnCommit, &QPushButton::clicked, this, &LoanLayout::onCommitClicked);
     connect(btnReset, &QPushButton::clicked, this, &LoanLayout::resetCalculation);
 
     // 连接输出类型选择
@@ -357,6 +357,8 @@ bool LoanLayout::validateInputs()
     return true;
 }
 
+
+// 计算按钮点击处理,override基类的纯虚函数
 void LoanLayout::onCommitClicked()
 {
     if (!validateInputs()) {

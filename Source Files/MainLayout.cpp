@@ -9,6 +9,8 @@ MainLayout::MainLayout(QWidget* parent)
 {
     createWidgets();
     setupLayout();
+    // 设置通用连接
+    setupCommonConnections();
     setupConnections();
 }
 
@@ -141,68 +143,20 @@ void MainLayout::setupLayout()
 
 void MainLayout::setupConnections()
 {
-    // 连接功能按钮信号
-    connect(btnBackspace, &QPushButton::clicked, this, &MainLayout::onBackspaceClicked);
-    connect(btnClear, &QPushButton::clicked, this, &MainLayout::onClearClicked);
-    connect(btnCommit, &QPushButton::clicked, this, &MainLayout::onCommitClicked);
-
+    // 连接数字按钮信号继承自BaseLayout
+	// 连接功能按钮信号继承自BaseLayout
+    
     // 连接内存按钮信号
     connect(btnMC, &QPushButton::clicked, this, &MainLayout::onMemoryClear);
     connect(btnMplus, &QPushButton::clicked, this, &MainLayout::onMemoryAdd);
     connect(btnMminus, &QPushButton::clicked, this, &MainLayout::onMemorySubtract);
     connect(btnMR, &QPushButton::clicked, this, &MainLayout::onMemoryRecall);
 
-    // 连接数字按钮信号
-    connect(btn0, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn1, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn2, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn3, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn4, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn5, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn6, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn7, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn8, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btn9, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btnPercent, &QPushButton::clicked, this, &MainLayout::appendNumber);
-    connect(btnPeriod, &QPushButton::clicked, this, &MainLayout::appendNumber);
-
     // 连接运算按钮信号
     connect(btnPlus, &QPushButton::clicked, this, &MainLayout::appendNumber);
     connect(btnMinus, &QPushButton::clicked, this, &MainLayout::appendNumber);
     connect(btnMul, &QPushButton::clicked, this, &MainLayout::appendNumber);
     connect(btnDiv, &QPushButton::clicked, this, &MainLayout::appendNumber);
-}
-
-// 核心代码：通信逻辑的实现
-void MainLayout::appendNumber()
-{
-    // 加一个字符
-    QPushButton* button = qobject_cast<QPushButton*>(sender());
-    QString text = emit getDisplayTextRequested(); // 请求获取表达式
-    emit displaySetRequested(text + button->text());
-}
-
-void MainLayout::onBackspaceClicked()
-{
-    QString text = emit getDisplayTextRequested(); // 请求获取表达式
-    // 删除显示框最后一个字符
-    if (!text.isEmpty()) {
-        text.chop(1);
-    }
-    emit displaySetRequested(text);
-}
-
-void MainLayout::onClearClicked()
-{
-    emit displayClearRequested();
-}
-
-// 发送！override基类的onCommitClicked()
-void MainLayout::onCommitClicked()
-{
-    QString expression = emit getDisplayTextRequested(); // 请求获取表达式
-    QString result = evaluateExpression(expression);    // 运算
-	emit displaySetRequested(result);   // 发送结果
 }
 
 // MC
@@ -276,4 +230,12 @@ QString MainLayout::evaluateExpression(const QString& expression)
     catch (...) {
         return "错误: 计算失败";
     }
+}
+
+// 发送！override基类的onCommitClicked()
+void MainLayout::onCommitClicked()
+{
+    QString expression = emit getDisplayTextRequested(); // 请求获取表达式
+    QString result = evaluateExpression(expression);    // 运算
+    emit displaySetRequested(result);   // 发送结果
 }

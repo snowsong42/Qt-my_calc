@@ -57,8 +57,8 @@ private:
     QLineEdit* loanAmount;
     QLineEdit* interestRate;
     QComboBox* outputType;
-    QPushButton* btnCalculate;
     QPushButton* btnReset;
+	// btn Commit继承自BaseLayout
 
     // 存储计算结果
     QString monthlyPaymentStr;

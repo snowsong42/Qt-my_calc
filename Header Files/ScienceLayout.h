@@ -16,10 +16,7 @@ public slots:
 	// 直接继承基类的KeyPress处理
 
 private slots:
-    void appendNumber();
-    void onBackspaceClicked();
-    void onClearClicked();
-	void onCommitClicked() override; // 处理等号按钮点击
+	void onCommitClicked() override; // override处理等号按钮点击
     void onFunctionClicked(); // 处理函数按钮点击
 
 private:
@@ -34,29 +31,14 @@ private:
     double factorial(double n);
     double degreesToRadians(double degrees);
 
-    // 基本数字按钮
-    QPushButton* btn0;
-    QPushButton* btn1;
-    QPushButton* btn2;
-    QPushButton* btn3;
-    QPushButton* btn4;
-    QPushButton* btn5;
-    QPushButton* btn6;
-    QPushButton* btn7;
-    QPushButton* btn8;
-    QPushButton* btn9;
-    QPushButton* btnPeriod;
-
+	// 基本数字按钮继承自BaseLayout
+    // 功能按钮继承自BaseLayout
+    
     // 基本运算按钮
     QPushButton* btnPlus;
     QPushButton* btnMinus;
     QPushButton* btnMul;
     QPushButton* btnDiv;
-    QPushButton* btnEquals;
-
-    // 功能按钮
-    QPushButton* btnClear;
-    QPushButton* btnBackspace;
 
     // 科学计算按钮
     QPushButton* btnPi;        // π

@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source Files\BaseLayout.cpp" />
-    <ClCompile Include="Source Files\Bitint.cpp" />
     <ClCompile Include="Source Files\LoanLayout.cpp" />
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\MainLayout.cpp">
@@ -22,7 +21,6 @@
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
     </ClCompile>
     <ClCompile Include="Source Files\my_calc.cpp" />
-    <ClCompile Include="Source Files\operator.cpp" />
     <ClCompile Include="Source Files\scienceLayout.cpp" />
     <ClCompile Include="Source Files\Settings.cpp" />
     <ClCompile Include="Source Files\SettingsDialog.cpp" />
@@ -35,7 +33,6 @@
     <ClInclude Include="resource.h" />
     <QtMoc Include="Header Files\SettingsDialog.h" />
     <QtMoc Include="Header Files\BaseLayout.h" />
-    <ClInclude Include="Header Files\Bigint.h" />
     <ClInclude Include="Header Files\dependences.h" />
     <QtMoc Include="Header Files\ScienceLayout.h" />
     <QtMoc Include="Header Files\my_calc.h" />

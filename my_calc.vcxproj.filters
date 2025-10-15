@@ -21,17 +21,11 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
-    <Filter Include="Source Files\Bigint">
-      <UniqueIdentifier>{a80f7059-98c4-48cb-bfcd-48326f35168c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Layouts">
       <UniqueIdentifier>{a65e5f9d-626c-4126-a0c4-cc725b290d6a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Layouts">
       <UniqueIdentifier>{13b72237-a2d3-4db0-bebc-feb83f3214a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Bigint">
-      <UniqueIdentifier>{9f16106c-40b0-4bce-a1dc-13eb4b8f5fb6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -40,12 +34,6 @@
     </ClCompile>
     <ClCompile Include="Source Files\my_calc.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source Files\Bitint.cpp">
-      <Filter>Source Files\Bigint</Filter>
-    </ClCompile>
-    <ClCompile Include="Source Files\operator.cpp">
-      <Filter>Source Files\Bigint</Filter>
     </ClCompile>
     <ClCompile Include="Source Files\LoanLayout.cpp">
       <Filter>Source Files\Layouts</Filter>
@@ -74,9 +62,6 @@
   <ItemGroup>
     <ClInclude Include="Header Files\dependences.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header Files\Bigint.h">
-      <Filter>Header Files\Bigint</Filter>
     </ClInclude>
     <ClInclude Include="Header Files\Settings.h">
       <Filter>Header Files</Filter>
