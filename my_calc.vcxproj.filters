@@ -81,6 +81,9 @@
     <ClInclude Include="Header Files\Settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Header Files\my_calc.h">
@@ -111,5 +114,13 @@
     <Image Include="Resource Files\ice.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="zhaoming.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="my_calc.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

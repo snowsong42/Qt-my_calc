@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header Files\Settings.h" />
+    <ClInclude Include="resource.h" />
     <QtMoc Include="Header Files\SettingsDialog.h" />
     <QtMoc Include="Header Files\BaseLayout.h" />
     <ClInclude Include="Header Files\Bigint.h" />
@@ -46,6 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource Files\ice.ico" />
+    <Image Include="zhaoming.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="my_calc.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8726C57B-F26A-40A3-A497-3C47A43EB3E0}</ProjectGuid>
@@ -78,7 +83,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>mscv</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;qml;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -102,6 +107,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>D:\coding\project\VisualStudio\Qt\my_calc\Header Files;D:\coding\project\VisualStudio\Qt\my_calc\Form Files;D:\coding\project\VisualStudio\Qt\my_calc\Resource Files;D:\coding\project\VisualStudio\Qt\my_calc\Source Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\coding\project\VisualStudio\Qt\my_calc\Source Files;D:\coding\project\VisualStudio\Qt\my_calc\Resource Files;D:\coding\project\VisualStudio\Qt\my_calc\Header Files;D:\coding\project\VisualStudio\Qt\my_calc\Form Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
