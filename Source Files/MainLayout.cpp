@@ -197,100 +197,78 @@ void MainLayout::onClearClicked()
     emit displayClearRequested();
 }
 
+// 发送！override基类的onCommitClicked()
 void MainLayout::onCommitClicked()
 {
     QString expression = emit getDisplayTextRequested(); // 请求获取表达式
-
-    if (expression.isEmpty()) {
-        return;
-    }
-
-    QString result = evaluateExpression(expression);
-    emit displaySetRequested(result);
+    QString result = evaluateExpression(expression);    // 运算
+	emit displaySetRequested(result);   // 发送结果
 }
 
+// MC
 void MainLayout::onMemoryClear()
 {
     memoryValue = 0.0;
 }
-
+// M+
 void MainLayout::onMemoryAdd()
 {
     double currentValue = getCurrentDisplayValue();
     memoryValue += currentValue;
 }
-
+// M-
 void MainLayout::onMemorySubtract()
 {
     double currentValue = getCurrentDisplayValue();
     memoryValue -= currentValue;
 }
-
+// MR
 void MainLayout::onMemoryRecall()
 {
     emit displaySetRequested(QString::number(memoryValue, 'g', 10));
 }
 
+// 拿到当前显示的值
 double MainLayout::getCurrentDisplayValue()
 {
     QString text = emit getDisplayTextRequested();
-    if (text.isEmpty()) {
-        return 0.0;
-    }
-
     // 如果是表达式，先计算结果
     if (text.contains(QChar('+')) || text.contains(QChar('-')) || text.contains(QChar('×')) ||
         text.contains(QChar('÷')) || text.contains(QChar('*')) || text.contains(QChar('/'))) {
         QString result = evaluateExpression(text);
-        return result.toDouble();
     }
-
     return text.toDouble();
 }
 
-bool MainLayout::isOperator(QChar c)
-{
-    return c == QChar('+') || c == QChar('-') || c == QChar('×') || c == QChar('÷') || c == QChar('*') || c == QChar('/');
-}
-
+// 核心代码：表达式计算
 QString MainLayout::evaluateExpression(const QString& expression)
 {
     try {
+		// 空表达式返回0
+        if (expression.isEmpty()) return "0.0";
+
         // 预处理表达式，替换特殊符号
         QString processedExpr = expression;
-
-        // 替换数学符号
-        processedExpr.replace("×", "*");
-        processedExpr.replace("÷", "/");
-
-        // 处理百分号
-        if (processedExpr.contains('%')) {
-            // 简单的百分号处理：将 % 替换为 /100
-            processedExpr.replace('%', "/100");
-        }
+        if (processedExpr.contains(QChar('×'))) processedExpr.replace("×", "*"); // 替换乘符号
+        if (processedExpr.contains(QChar('÷'))) processedExpr.replace("÷", "/"); // 替换除符号
+        if (processedExpr.contains('%')) processedExpr.replace('%', "/100"); // 处理百分号，将 % 替换为 /100
 
         // 使用QJSEngine计算表达式
         QJSValue result = jsEngine.evaluate(processedExpr);
 
-        if (result.isError()) {
-            return "错误: " + result.toString();
-        }
+		// 处理错误
+        if (result.isError()) return "错误: " + result.toString();
 
         double value = result.toNumber();
-
         // 处理特殊值
-        if (std::isinf(value)) {
-            return "错误: 无穷大";
-        }
-        if (std::isnan(value)) {
-            return "错误: 非数字";
-        }
+        if (std::isinf(value)) return "错误: 无穷大";
+        if (std::isnan(value)) return "错误: 非数字";
 
-        // 格式化输出
+        // 输出格式化
         if (qAbs(value) < 1e-10) value = 0; // 处理浮点误差
 
+		// 正常输出：转化为QString，最多10位有效数字
         return QString::number(value, 'g', 10);
-
     }
     catch (const std::exception& e) {
         return QString("错误: %1").arg(e.what());

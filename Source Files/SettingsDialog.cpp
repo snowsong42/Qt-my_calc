@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QMessageBox>
 
+// 构造函数
 SettingsDialog::SettingsDialog(Settings* settings, QWidget* parent)
     : QDialog(parent)
     , m_settings(settings)

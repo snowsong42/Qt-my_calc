@@ -2,5 +2,8 @@
     <qresource prefix="/my_calc"/>
     <qresource prefix="/image">
         <file>ice.ico</file>
+        <file>checkbox_checked.png</file>
+        <file>checkbox_unchecked2.png</file>
+        <file>checkbox_unchecked.png</file>
     </qresource>
 </RCC>

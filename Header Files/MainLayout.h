@@ -34,7 +34,6 @@ private:
 	// 自身的工具方法
     QString evaluateExpression(const QString& expression);
     double getCurrentDisplayValue();
-    bool isOperator(QChar c);
 
     // 数字按钮
     QPushButton* btn0;

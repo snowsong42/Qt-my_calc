@@ -11,7 +11,7 @@ my_calc::my_calc(QWidget* parent)
 {
     this->setWindowIcon(QIcon(":/image/ice.ico"));
     setWindowTitle("计算器");
-    setMinimumSize(400, 500);
+    setMinimumSize(400, 500);   // 只设置最小大小，这样做就可以缩放
     resize(500, 600);
 
     createWidgets();

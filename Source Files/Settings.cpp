@@ -47,38 +47,28 @@ QString Settings::styleCast(const QString& style) const{
             "QLineEdit { background-color: white; color: #333333; border: 2px solid #cccccc; }"
             "QPushButton { "
             "    background-color: white; "
-			"    color: #000000; "             // 黑色文字
+            "    color: #000000; "             // 黑色文字
             "    font-weight: bold; "
-            "    border: 1px solid #cccccc; "  // 减少边框宽度
-            "    border-radius: 4px; "
-            "    padding: 3px 8px; "           // 减少内边距
-            "    min-height: 20px; "           // 设置最小高度
-			"    min-width: 60px; "            // 设置最小宽度
+            "    border: 1px solid #cccccc; "  // 边框宽度
+            "    border-radius: 4px; "         // 圆角
+            "    padding: 3px 8px; "           // 内边距
+            "    min-height: 20px; "           // 最小高度
+            "    min-width: 60px; "            // 最小宽度
             "}"
-            "QPushButton:hover { "
-            "    background-color: #e1f5fe; "
-            "    border-color: #4fc3f7; "
-            "}"
-            "QPushButton:pressed { "
-            "    background-color: #e0e0e0; "
-            "    border-color: #9e9e9e; "
-            "}"
-            "QComboBox { "
-            "    background-color: #f8f8f8; "
-            "    color: #333333; "
-            "    min-height: 25px; "
-            "}"
+            "QPushButton:hover { background-color: #e1f5fe;  border-color: #4fc3f7;}"
+            "QPushButton:pressed { background-color: #e0e0e0; border-color: #9e9e9e; }"
+            // 单选按钮
+            "QRadioButton::indicator{ color: #0d47a1; width: 20px; height: 20px; spacing: 5px;}"
+            "QRadioButton::indicator:unchecked {image: url(:/image/checkbox_unchecked.png);}"
+            "QRadioButton::indicator:checked { image: url(:/image/checkbox_checked.png);  }"
+            // 勾选框
+            "QCheckBox::indicator{  border: 0px solid #FFFFFF; width: 20px; height: 20px; }"
+            "QCheckBox::indicator:unchecked{ image: url(:/image/checkbox_unchecked.png);}"
+            "QCheckBox::indicator:checked{ image: url(:/image/checkbox_checked.png); }"
+            // 下拉框
+            "QComboBox {  color: #333333; }"
             "QComboBox:focus { "
-            "    border-color: #3498db; "
-            "}"
-            "QComboBox::drop-down { "
-            "    border: none; "
-            "    width: 25px; "
-            "}"
-            "QComboBox::down-arrow { "
-            "    image: none; "
-            "    width: 0px; "
-            "    height: 0px; "
+			"    border-color: #3498db; " // 聚焦时边框颜色:蓝色
             "}"
             "QComboBox QAbstractItemView { "
             "    background-color: #f8f8f8; "  // 下拉列表也是浅灰色
@@ -86,21 +76,13 @@ QString Settings::styleCast(const QString& style) const{
             "    outline: none; "
             "    min-height: 30px; "
             "}"
-
+            // 组合物件
             "QGroupBox { "
-			"    background-color: #efefef; "  // 浅灰色背景,三个数字越大越浅
+            "    background-color: #efefef; "  // 浅灰色背景,三个数字越大越浅
             "    border: 1px solid #cccccc; "
             "    border-radius: 5px; "
             "    margin-top: 10px; "
             "    padding-top: 10px; "
-            "}"
-            "QGroupBox::title { "
-            "    subcontrol-origin: margin; "
-            "    subcontrol-position: top center; "
-            "    background-color: #f8f8f8; "  // 标题背景也是浅灰色
-            "    color: #333333; "
-            "    font-weight: bold; "
-            "    padding: 0 5px; "
             "}";
     }
     else if (style == "Dark") {
@@ -126,7 +108,7 @@ QString Settings::styleCast(const QString& style) const{
         styleSheet =
             "QMainWindow { background-color: #e3f2fd; }"
             "QWidget { background-color: #e3f2fd; color: #1565c0; }"
-            "QLineEdit { background-color: #bbdefb; color: #0d47a1; border: 1px solid #90caf9; }"
+            "QLineEdit { background-color: #bbdefb; color: #0d47a1; border: 1px solid #00008B; }"
             "QPushButton { "
             "    background-color: #bbdefb; "
 			"    color: #00008B; "  // 深蓝色文字
@@ -138,82 +120,40 @@ QString Settings::styleCast(const QString& style) const{
             "    min-width: 60px; "  // 添加最小宽度
             "}"
             "QPushButton:hover { background-color: #1976d2; }"
-            "QPushButton:pressed { background-color: #0d47a1; }";
-            "QComboBox { "
-            "    background-color: #f3f9ff; "
-            "    color: #0d47a1; "
-            "    border: 1px solid #90caf9; "
-            "    border-radius: 4px; "
-            "    padding: 4px 8px; "
-            "    min-height: 25px; "
-            "}"
+            "QPushButton:pressed { background-color: #0d47a1; }"
+            // 单选按钮
+            "QRadioButton::indicator{ color: #0d47a1; width: 20px; height: 20px; spacing: 5px;}"
+            "QRadioButton::indicator:unchecked {image: url(:/image/checkbox_unchecked.png);}"
+            "QRadioButton::indicator:checked { image: url(:/image/checkbox_checked.png);  }"
+            // 勾选框
+            "QCheckBox::indicator{  border: 0px solid #FFFFFF; width: 20px; height: 20px; }"
+            "QCheckBox::indicator:unchecked{ image: url(:/image/checkbox_unchecked.png);}"
+            "QCheckBox::indicator:checked{ image: url(:/image/checkbox_checked.png); }"
+            // 下拉框
+            "QComboBox {  color: #333333; }"
             "QComboBox:focus { "
-            "    border-color: #1976d2; "
-            "    background-color: #ffffff; "
-            "}"
-            "QComboBox::drop-down { "
-            "    border: none; "
-            "    width: 25px; "
-            "}"
-            "QComboBox::down-arrow { "
-            "    image: none; "
-            "    border-left: 5px solid transparent; "
-            "    border-right: 5px solid transparent; "
-            "    border-top: 5px solid #0d47a1; "
-            "    width: 0px; "
-            "    height: 0px; "
+            "    border-color: #3498db; " // 聚焦时边框颜色:蓝色
             "}"
             "QComboBox QAbstractItemView { "
-            "    background-color: #f3f9ff; "
-            "    border: 1px solid #90caf9; "
-            "    border-radius: 4px; "
-            "    selection-background-color: #bbdefb; "
-            "    selection-color: #0d47a1; "
+            "    background-color: #e1f5fe; "  // 下拉列表浅蓝色
+            "    selection-background-color: #f8f8f8; "  // 选中项用浅灰色
             "    outline: none; "
             "    min-height: 30px; "
             "}"
+            // 组合物件
             "QGroupBox { "
-            "    background-color: #e1f5fe; "  // 更明显的浅蓝色背景
-            "    border: 1px solid #81d4fa; "
+            "    background-color: #e3f2fd; "  // 浅蓝色背景
+            "    border: 1px solid #cccccc; "
             "    border-radius: 5px; "
             "    margin-top: 10px; "
             "    padding-top: 10px; "
-            "    color: #0277bd; "
-            "}"
-            "QGroupBox::title { "
-            "    subcontrol-origin: margin; "
-            "    subcontrol-position: top center; "
-            "    background-color: #e1f5fe; "
-            "    color: #01579b; "
-            "    font-weight: bold; "
-            "    padding: 2px 10px; "
-            "    border-radius: 3px; "
-            "}"
-            // 为单选按钮添加样式
-            "QRadioButton { "
-            "    color: #0d47a1; "
-            "    spacing: 5px; "
-            "}"
-            "QRadioButton::indicator { "
-            "    width: 13px; "
-            "    height: 13px; "
-            "}"
-            "QRadioButton::indicator:unchecked { "
-            "    border: 1px solid #90caf9; "
-            "    border-radius: 6px; "
-            "    background-color: white; "
-            "}"
-            "QRadioButton::indicator:checked { "
-            "    border: 1px solid #1976d2; "
-            "    border-radius: 6px; "
-            "    background-color: #1976d2; "
             "}";
     }
     else if (style == "Green") {
         styleSheet =
             "QMainWindow { background-color: #e8f5e8; }"
             "QWidget { background-color: #e8f5e8; color: #2e7d32; }"
-            "QLineEdit { background-color: #c8e6c9; color: #1b5e20; border: 1px solid #a5d6a7; }"
+            "QLineEdit { background-color: #c8e6c9; color: #1b5e20; border: 1px solid #006400; }"
             "QPushButton { "
             "    background-color: #c8e6c9; "
 			"    color: #006400; " // 深绿色文字
@@ -225,75 +165,33 @@ QString Settings::styleCast(const QString& style) const{
             "    min-width: 60px; "  // 添加最小宽度
             "}"
             "QPushButton:hover { background-color: #388e3c; }"
-            "QPushButton:pressed { background-color: #1b5e20; }";
-            "QComboBox { "
-            "    background-color: #f5fbf5; "
-            "    color: #1b5e20; "
-            "    border: 1px solid #a5d6a7; "
-            "    border-radius: 4px; "
-            "    padding: 4px 8px; "
-            "    min-height: 25px; "
-            "}"
+            "QPushButton:pressed { background-color: #1b5e20; }"
+            // 单选按钮
+            "QRadioButton::indicator{ color: #0d47a1; width: 20px; height: 20px; spacing: 5px;}"
+            "QRadioButton::indicator:unchecked {image: url(:/image/checkbox_unchecked.png);}"
+            "QRadioButton::indicator:checked { image: url(:/image/checkbox_checked.png);  }"
+            // 勾选框
+            "QCheckBox::indicator{  border: 0px solid #FFFFFF; width: 20px; height: 20px; }"
+            "QCheckBox::indicator:unchecked{ image: url(:/image/checkbox_unchecked.png);}"
+            "QCheckBox::indicator:checked{ image: url(:/image/checkbox_checked.png); }"
+            // 下拉框
+            "QComboBox {  color: #333333; }"
             "QComboBox:focus { "
-            "    border-color: #388e3c; "
-            "    background-color: #ffffff; "
-            "}"
-            "QComboBox::drop-down { "
-            "    border: none; "
-            "    width: 25px; "
-            "}"
-            "QComboBox::down-arrow { "
-            "    image: none; "
-            "    border-left: 5px solid transparent; "
-            "    border-right: 5px solid transparent; "
-            "    border-top: 5px solid #1b5e20; "
-            "    width: 0px; "
-            "    height: 0px; "
+            "    border-color: #3498db; " // 聚焦时边框颜色:蓝色
             "}"
             "QComboBox QAbstractItemView { "
-            "    background-color: #f5fbf5; "
-            "    border: 1px solid #a5d6a7; "
-            "    border-radius: 4px; "
-            "    selection-background-color: #c8e6c9; "
-            "    selection-color: #1b5e20; "
+            "    background-color: #e8f5e9; "  // 下拉列表浅绿色
+            "    selection-background-color: #e1f5fe; "  // 选中项用浅蓝色
             "    outline: none; "
             "    min-height: 30px; "
             "}"
+            // 组合物件
             "QGroupBox { "
-            "    background-color: #e8f5e9; "  // 更明显的浅绿色背景
-            "    border: 1px solid #a5d6a7; "
+            "    background-color: #e8f5e9; "  // 浅绿色背景
+            "    border: 1px solid #cccccc; "
             "    border-radius: 5px; "
             "    margin-top: 10px; "
             "    padding-top: 10px; "
-            "    color: #2e7d32; "
-            "}"
-            "QGroupBox::title { "
-            "    subcontrol-origin: margin; "
-            "    subcontrol-position: top center; "
-            "    background-color: #e8f5e9; "
-            "    color: #1b5e20; "
-            "    font-weight: bold; "
-            "    padding: 2px 10px; "
-            "    border-radius: 3px; "
-            "}"
-            // 为单选按钮添加样式
-            "QRadioButton { "
-            "    color: #1b5e20; "
-            "    spacing: 5px; "
-            "}"
-            "QRadioButton::indicator { "
-            "    width: 13px; "
-            "    height: 13px; "
-            "}"
-            "QRadioButton::indicator:unchecked { "
-            "    border: 1px solid #a5d6a7; "
-            "    border-radius: 6px; "
-            "    background-color: white; "
-            "}"
-            "QRadioButton::indicator:checked { "
-            "    border: 1px solid #388e3c; "
-            "    border-radius: 6px; "
-            "    background-color: #388e3c; "
             "}";
     }
     else {
