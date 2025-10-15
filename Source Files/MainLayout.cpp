@@ -203,9 +203,9 @@ QString MainLayout::evaluateExpression(const QString& expression)
 
         // 预处理表达式，替换特殊符号
         QString processedExpr = expression;
-        if (processedExpr.contains(QChar('×'))) processedExpr.replace("×", "*"); // 替换乘符号
-        if (processedExpr.contains(QChar('÷'))) processedExpr.replace("÷", "/"); // 替换除符号
-        if (processedExpr.contains('%')) processedExpr.replace('%', "/100"); // 处理百分号，将 % 替换为 /100
+        processedExpr.replace("×", "*"); // 替换乘符号
+        processedExpr.replace("÷", "/"); // 替换除符号
+        processedExpr.replace('%', "/100"); // 处理百分号，将 % 替换为 /100
 
         // 使用QJSEngine计算表达式
         QJSValue result = jsEngine.evaluate(processedExpr);

@@ -7,6 +7,7 @@ ScienceLayout::ScienceLayout(QWidget* parent)
     setupLayout();
     // 设置通用连接
     setupCommonConnections();
+	// 设置特定连接
     setupConnections();
 }
 
